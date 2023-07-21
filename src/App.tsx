@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import './App.css';
 import { useTelegramWebApp, withTelegramWebApp } from 'react-telegram-webapp';
 import { io } from 'socket.io-client';
+import './App.css';
 
 // import ProgressBar from './components/ProgressBar';
 // import OneRowComponent from './components/OneRowComponent';
@@ -23,11 +23,15 @@ const initDataUnsafe = {
 };
  */
 
-const socket = io({
-  host: process.env.REACT_APP_WS_URI,
+const wsUri: string = process.env.REACT_APP_WS_URI || '';
+const socket = io(wsUri, {
   autoConnect: true,
   path: '/socket.io/',
   transports: ['websocket'],
+  extraHeaders: {
+    'ngrok-skip-browser-warning': 'true',
+    'User-Agent': 'socket-io',
+  },
 });
 
 // const getProgressSeconds = (ioSocketTime: number) => {
@@ -169,10 +173,13 @@ function App() {
   return (
     <div className="App">
       <div className="App-header">
+        <h1>Coming soon...</h1>
+
         {/*<p>Hello {tg.initDataUnsafe?.user?.first_name}</p>*/}
         {/*<p>*/}
         {/*  <button onClick={onClick}>Круто!</button>*/}
         {/*</p>*/}
+        <span>Tech data:</span>
         <span>WS = {JSON.stringify(isWork)}</span>
         <span>{JSON.stringify(tg.initDataUnsafe)}</span>
         {/*<OneRowComponent text="Ваш баланс: " value={currentBalance} />*/}

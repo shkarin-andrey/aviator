@@ -1,0 +1,10 @@
+version: "2"
+authtoken: 2SscJ7xTNF5ASKD2mlYJoxYYbYj_6WiRQfd6icPtZERpgapcG
+region: eu
+tunnels:
+  frontend:
+    proto: http
+    addr: frontend:8800
+  telegram:
+    proto: http
+    addr: backend:3000

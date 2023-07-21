@@ -1,0 +1,6 @@
+apiVersion: v1
+
+name: Frontend
+description: Frontend games service chart for minikube/kubernetes
+
+version: 1.0.0

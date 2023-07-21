@@ -1,0 +1,43 @@
+version: "3.8"
+
+networks:
+  &app-network aviator_network:
+    driver: bridge
+    external: true
+
+x-common-template: &common-template
+  restart: always
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+  networks:
+    - *app-network
+
+services:
+
+  &frontend-service frontend:
+    <<: *common-template
+    container_name: *frontend-service
+    build:
+      context: .
+      dockerfile: .docker/frontend/dev/Dockerfile
+    hostname: *frontend-service
+    user: "1000:1000"
+    ports:
+      - "8800:${PORT}"
+    volumes:
+      - .:/app
+
+  &ngrock-service ngrok:
+    <<: *common-template
+    container_name: *ngrock-service
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    command:
+      - "start"
+      - "--all"
+      - "--config"
+      - "/etc/ngrok.yml"
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
+    ports:
+      - "4040:4040"

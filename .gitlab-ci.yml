@@ -1,0 +1,4 @@
+include:
+  - project: '${CI_PROJECT_ROOT_NAMESPACE}/ci'
+    ref: main
+    file: 'templates/react.yml'

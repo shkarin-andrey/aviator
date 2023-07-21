@@ -1,0 +1,28 @@
+env: stage
+
+image:
+  repository: localhost:5000/frontend
+  pullPolicy: IfNotPresent
+  tag: master
+
+replica:
+  count: 1
+
+containers:
+  restartPolicy: Always
+
+ports:
+  containerPort: 80
+  servicePort: 8800
+
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+resources:
+  requests:
+    cpu: "50m"
+    memory: "100Mi"
+  limits:
+    cpu: "100m"
+    memory: "200Mi"

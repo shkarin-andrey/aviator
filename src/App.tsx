@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useTelegramWebApp, withTelegramWebApp } from 'react-telegram-webapp';
-import { io } from 'socket.io-client';
 import './App.css';
+import { io, Socket } from 'socket.io-client';
+import { TelegramGameProxy } from './interfaces/telegram-game-proxy';
 
 // import ProgressBar from './components/ProgressBar';
 // import OneRowComponent from './components/OneRowComponent';
@@ -24,15 +24,7 @@ const initDataUnsafe = {
  */
 
 const wsUri: string = process.env.REACT_APP_WS_URI || '';
-const socket = io(wsUri, {
-  autoConnect: true,
-  path: '/socket.io/',
-  transports: ['websocket'],
-  extraHeaders: {
-    'ngrok-skip-browser-warning': 'true',
-    'User-Agent': 'socket-io',
-  },
-});
+let socket: Socket;
 
 // const getProgressSeconds = (ioSocketTime: number) => {
 //   const date = new Date(ioSocketTime).getSeconds();
@@ -40,8 +32,11 @@ const socket = io(wsUri, {
 //   return time;
 // };
 
-function App() {
-  const tg = useTelegramWebApp();
+export default function App() {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const tg = window['TelegramGameProxy'] as TelegramGameProxy;
+  // const tg = useTelegramWebApp();
   // const [currentBalance, setCurrentBalance] = useState(0);
   // const [bonusBalance, setBonusBalance] = useState(0);
   // const [bid, setBid] = useState(0);
@@ -99,7 +94,18 @@ function App() {
   // };
 
   useEffect(() => {
-    tg.ready();
+    // tg.ready();
+
+    socket = io(wsUri, {
+      autoConnect: true,
+      path: '/socket.io/',
+      transports: ['websocket'],
+      query: tg.initParams,
+      extraHeaders: {
+        'ngrok-skip-browser-warning': 'true',
+        'User-Agent': 'socket-io',
+      },
+    });
 
     // axios
     //   .post('/api/wallet', {
@@ -113,9 +119,18 @@ function App() {
 
     socket.on('connect', () => {
       setIsWork('connected');
-      // socket.on('ticker', (arg) => {
-      //   setIoSocket(arg);
-      // });
+
+      socket.on('start_round', (arg: any) => {
+        console.log(arg);
+      });
+
+      socket.on('end_round', (arg: any) => {
+        console.log(arg);
+      });
+
+      socket.on('result', (arg: any) => {
+        console.log(arg);
+      });
     });
   }, []);
 
@@ -181,7 +196,15 @@ function App() {
         {/*</p>*/}
         <span>Tech data:</span>
         <span>WS = {JSON.stringify(isWork)}</span>
-        <span>{JSON.stringify(tg.initDataUnsafe)}</span>
+
+        {Object.entries(tg.initParams).map(([key, val]) => (
+          <div>
+            <strong>{key}: </strong>
+            <span>{val}</span>
+          </div>
+        ))}
+
+        {/*<span>{JSON.stringify()}</span>*/}
         {/*<OneRowComponent text="Ваш баланс: " value={currentBalance} />*/}
         {/*<OneRowComponent text="Ваш бонусный баланс: " value={bonusBalance} />*/}
         {/*<OneRowComponent text="Цена биткоина в прошлом раунде: " value={roundPrice} />*/}
@@ -209,24 +232,24 @@ function App() {
   );
 }
 
-const validateHash = async (hash: string) => {
-  // TODO: remove later
-  return true;
+// const validateHash = async (hash: string) => {
+//   // TODO: remove later
+//   return true;
+//
+//   if (process.env.NODE_ENV !== 'production') {
+//     return true;
+//   }
+//
+//   const raw = await fetch('/api/hash', {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify({ hash }),
+//   });
+//   const { status } = await raw.json();
+//
+//   return status;
+// };
 
-  if (process.env.NODE_ENV !== 'production') {
-    return true;
-  }
-
-  const raw = await fetch('/api/hash', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ hash }),
-  });
-  const { status } = await raw.json();
-
-  return status;
-};
-
-export default withTelegramWebApp(App, { validateHash });
+// export default withTelegramWebApp(App, { validateHash });

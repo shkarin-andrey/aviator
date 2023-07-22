@@ -7,8 +7,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-size: 10px;
 
-  color: var(--tg-theme-text-color);
-  background-color: var(--tg-theme-bg-color);
+  color: #ffffff;
+  background: linear-gradient(180deg, #9C59FE 0%, #6F53FD 100%);
 }
 
 a {
@@ -50,43 +50,4 @@ button {
 }
 .mr-2 {
   margin-right: 8px;
-}
-// progress_bar
-.progress_bar {
-  position: relative;
-  width: 100%;
-  height: 5px;
-  background: rgb(199, 199, 199);
-  border-radius: 6px;
-  max-width: 300px;
-  overflow: hidden;
-  margin-top: 40px;
-
-  &__active {
-    position: absolute;
-    height: 100%;
-    background: #6c6cff;
-  }
-
-  &__count {
-    font-size: 14px;
-  }
-}
-
-// btn
-.btn {
-  &__wrapper {
-    margin-top: 20px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    justify-content: center;
-  }
-}
-
-.chartview {
-  position: relative;
-  height: 640px;
-  width: 100%;
 }

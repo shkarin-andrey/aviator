@@ -76,7 +76,12 @@ const BetsPage = () => {
           roundId,
           betId,
         };
-        await axios.post(process.env.REACT_APP_API_URL + '/close', { ...tg.initParams, userGame: 'aviator' });
+        await axios.post(process.env.REACT_APP_API_URL + '/close', {
+          ...tg.initParams,
+          userGame: 'aviator',
+          roundId,
+          betId,
+        });
         setIsBet(false);
       } else if (!startRound && !isBet) {
         const data = {
@@ -86,7 +91,11 @@ const BetsPage = () => {
           userChat: '1234567',
           hash: '69f45e0b30510528064f2cac2de94c44',
         };
-        const res = await axios.post(process.env.REACT_APP_API_URL + '/bet', { ...tg.initParams, userGame: 'aviator' });
+        const res = await axios.post(process.env.REACT_APP_API_URL + '/bet', {
+          ...tg.initParams,
+          userGame: 'aviator',
+          amount: bet,
+        });
         setBetId(res.data.betId);
         setIsBet(true);
       }

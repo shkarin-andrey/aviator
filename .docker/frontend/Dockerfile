@@ -6,6 +6,8 @@ COPY package*.json ./
 RUN npm ci --foreground-scripts=true --ignore-scripts=false --force && npm cache clean --force
 
 COPY tsconfig*.json ./
+COPY tailwind.config.js ./
+COPY postcss.config.js ./
 COPY .eslintrc.js ./
 COPY .prettierrc ./
 COPY public ./public

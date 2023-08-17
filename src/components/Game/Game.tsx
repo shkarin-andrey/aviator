@@ -5,6 +5,7 @@ import { useTelegramGameProxy } from '../../hooks/use-telegram-game-proxy';
 import { Events } from '../../interfaces/events.enum';
 import { SocketEvents } from '../../interfaces/SocketEvent';
 import Bets from '../Bets';
+import BgButtons from '../BgButtons';
 import BasicLayouts from '../Layouts/BasicLayout';
 import Money from '../Money';
 import OnGameReward from '../OnGameReward';
@@ -49,7 +50,7 @@ const BetsPage = () => {
       userChat: '1234567',
       hash: '69f45e0b30510528064f2cac2de94c44',
     };
-    axios.post(process.env.REACT_APP_API_URL + '/user-info', { ...tg.initParams, userGame: 'aviator' }).then((res) => {
+    axios.post(process.env.REACT_APP_API_URL + '/user-info', tgMock).then((res) => {
       setMoney(res.data.balance);
     });
     console.log('some');
@@ -76,12 +77,7 @@ const BetsPage = () => {
           roundId,
           betId,
         };
-        await axios.post(process.env.REACT_APP_API_URL + '/close', {
-          ...tg.initParams,
-          userGame: 'aviator',
-          roundId,
-          betId,
-        });
+        await axios.post(process.env.REACT_APP_API_URL + '/close', data);
         setIsBet(false);
       } else if (!startRound && !isBet) {
         const data = {
@@ -91,11 +87,7 @@ const BetsPage = () => {
           userChat: '1234567',
           hash: '69f45e0b30510528064f2cac2de94c44',
         };
-        const res = await axios.post(process.env.REACT_APP_API_URL + '/bet', {
-          ...tg.initParams,
-          userGame: 'aviator',
-          amount: bet,
-        });
+        const res = await axios.post(process.env.REACT_APP_API_URL + '/bet', data);
         setBetId(res.data.betId);
         setIsBet(true);
       }
@@ -118,7 +110,7 @@ const BetsPage = () => {
       autoConnect: true,
       path: '/socket.io/',
       transports: ['websocket', 'polling'],
-      query: { ...tg.initParams, userGame: 'aviator' },
+      query: tgMock,
     });
 
     socket.on('connect', () => {
@@ -165,6 +157,8 @@ const BetsPage = () => {
     setSocket(socket);
   }, []);
 
+  console.log(isBet);
+
   return (
     <BasicLayouts>
       <div className="App-header relative z-50">
@@ -184,9 +178,13 @@ const BetsPage = () => {
             />
           ) : null}
         </div>
-        <div className="flex flex-col gap-5 absolute bottom-[100px]">
-          {startRound ? (
+        <div className="flex flex-col gap-5 absolute bottom-[100px] items-center justify-center">
+          {isBet ? (
             <OnGameReward money={bet * multiply} />
+          ) : startRound ? (
+            <BgButtons>
+              <div className="text-xl uppercase font-bold whitespace-nowrap">Wait next round</div>
+            </BgButtons>
           ) : (
             <>
               <div className="flex flex-col">
@@ -198,9 +196,21 @@ const BetsPage = () => {
             </>
           )}
           {startRound ? (
-            <PlayButton className="orange-gradient button-play" onClick={startGame} text={'claim'} />
+            isBet ? (
+              <BgButtons>
+                <PlayButton
+                  className="orange-gradient button-play whitespace-nowrap"
+                  onClick={startGame}
+                  text={'cash out'}
+                />
+              </BgButtons>
+            ) : null
+          ) : isBet ? (
+            <BgButtons>
+              <span className="text-xl uppercase font-bold whitespace-nowrap">Wait start round</span>
+            </BgButtons>
           ) : (
-            <PlayButton className="green-gradient button-play" onClick={startGame} text={'started'} />
+            <PlayButton className="green-gradient button-play" onClick={startGame} text={'make bet'} />
           )}
         </div>
       </div>

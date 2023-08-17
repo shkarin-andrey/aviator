@@ -52,6 +52,7 @@ const BetsPage = () => {
     axios.post(process.env.REACT_APP_API_URL + '/user-info', { ...tg.initParams, userGame: 'aviator' }).then((res) => {
       setMoney(res.data.balance);
     });
+    console.log('some');
   }, []);
 
   const addBet = () => {

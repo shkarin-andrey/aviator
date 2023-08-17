@@ -8,7 +8,7 @@ body {
   font-size: 10px;
 
   color: #ffffff;
-  background: linear-gradient(180deg, #9C59FE 0%, #6F53FD 100%);
+  // background: linear-gradient(180deg, #9C59FE 0%, #6F53FD 100%);
 }
 
 a {
@@ -25,7 +25,6 @@ button {
   border-radius: 5px;
   border: 0;
   font-size: 1rem;
-  padding: 0.5rem 1rem;
   cursor: pointer;
 }
 
@@ -33,15 +32,6 @@ button {
   background: gray;
 }
 
-.flex {
-  display: flex;
-}
-.items-center {
-  align-items: center;
-}
-.justify-center {
-  justify-content: center;
-}
 .row {
   flex-direction: row;
 }

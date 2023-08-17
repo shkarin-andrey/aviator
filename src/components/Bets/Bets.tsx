@@ -1,0 +1,54 @@
+import { FC } from 'react';
+import ButtonBet from '../ButtonBet';
+import { TypeButton } from '../ButtonBet/ButtonBet.interfaces';
+import ButtonScaleBet from '../ButtonScaleBet';
+import Money from '../Money';
+import { PropsBets } from './Bets.interfaces';
+
+const Bets: FC<PropsBets> = (props) => {
+  const { bet, setBet, money, addBet, minusBet } = props;
+  const minimumBet = 1;
+
+  const minBet = () => {
+    setBet(minimumBet);
+  };
+
+  const x2Bet = () => {
+    setBet(bet * 2);
+  };
+
+  const divideBet = () => {
+    if (bet > minimumBet) {
+      setBet(bet / 2);
+    }
+  };
+
+  const allInBet = () => {
+    setBet(money);
+  };
+
+  return (
+    <div className="py-[10px] px-[17px] bg-[#DFF9FF] rounded-[21px] shadow">
+      <div className="flex flex-col bg-white rounded-[7px] shadow-bets mb-3">
+        <div className="w-full bg-[#3ECEFE] text-white rounded-t-[7px] text-left pl-4 text-lg font-bold">BET</div>
+        <div className="flex flex-row gap-9 w-full pl-4 justify-between py-2">
+          <div className="flex items-center justify-start">
+            <Money money={bet} classNameText="text-[28px] text-[#7454FD]" moneyHeight="18" moneyWidth="18" />
+          </div>
+          <div className="flex flex-row gap-3 pr-2 items-center">
+            <ButtonBet onClick={addBet} typeButton={TypeButton.Plus} />
+            <ButtonBet onClick={minusBet} typeButton={TypeButton.Minus} />
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-row gap-1">
+        <ButtonScaleBet className="bg-[#4CDAFE] button-min" onClick={minBet} text={'Min'} />
+        <ButtonScaleBet className="bg-[#FC8AFF] button-x2" onClick={x2Bet} text={'X2'} />
+        <ButtonScaleBet className="bg-[#C286FF] button-div2" onClick={divideBet} text={'/2'} />
+        <ButtonScaleBet className="bg-[#FFDD17] button-allin" onClick={allInBet} text={'All in'} />
+      </div>
+    </div>
+  );
+};
+
+export default Bets;

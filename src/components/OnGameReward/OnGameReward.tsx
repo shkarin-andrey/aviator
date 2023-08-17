@@ -6,7 +6,7 @@ const OnGameReward: FC<PropsOnGameReward> = (props) => {
   const { money } = props;
 
   return (
-    <div className="flex flex-col bg-white rounded-[7px] shadow-bets mb-3 w-[150px] items-center">
+    <div className="flex flex-col bg-white rounded-[7px] shadow-bets mb-3 w-[150px] items-center justify-center">
       <div className="w-full bg-[#3ECEFE] text-white rounded-t-[7px] text-center text-xl font-bold uppercase">
         reward
       </div>

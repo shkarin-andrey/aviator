@@ -94,6 +94,7 @@ const BetsPage = () => {
         };
         const res = await axios.post(process.env.REACT_APP_API_URL + '/bet', {
           ...tg.initParams,
+          amount: bet,
           userGame: 'aviator',
         });
         setBetId(res.data.betId);

@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .App {
   text-align: center;
   font-size: 1rem;
@@ -19,4 +23,67 @@
 }
 .justify-center {
   justify-content: center;
+}
+
+.button-play {
+  border-radius: 33px;
+  border: 3px solid var(--white, #fff);
+  box-shadow: 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
+}
+
+.button-scale {
+  border-radius: 12px;
+  border: 3px solid var(--white, #fff);
+}
+
+.button-min {
+  box-shadow: inset 0px -4px 0px 0px #3ecefe, 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
+}
+
+.button-x2 {
+  box-shadow: inset 0px -4px 0px 0px #da57f0, 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
+}
+.button-div2 {
+  box-shadow: inset 0px -4px 0px 0px #a75cf4, 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
+}
+.button-allin {
+  box-shadow: inset 0px -4px 0px 0px #ffb213, 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
+}
+
+.green-gradient {
+  background: linear-gradient(
+    60deg,
+    rgba(146, 242, 8, 1) 0%,
+    rgba(146, 242, 8, 1) 50%,
+    rgba(103, 235, 0, 1) 50%,
+    rgba(103, 235, 0, 1) 100%
+  );
+}
+
+.orange-gradient {
+  background: linear-gradient(
+    60deg,
+    rgba(255, 168, 0, 1) 0%,
+    rgba(255, 168, 0, 1) 50%,
+    rgb(254, 142, 14) 50%,
+    rgb(254, 142, 14) 100%
+  );
+}
+
+.purpure-gradient {
+  background: linear-gradient(
+    60deg,
+    rgba(242, 8, 219, 1) 0%,
+    rgba(242, 8, 219, 1) 50%,
+    rgba(244, 98, 215, 1) 50%,
+    rgba(244, 98, 215, 1) 100%
+  );
+}
+
+.shadow {
+  box-shadow: 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
+}
+
+.shadow-bets {
+  box-shadow: 0px 2px 0px 0px #3ecefe, 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
 }

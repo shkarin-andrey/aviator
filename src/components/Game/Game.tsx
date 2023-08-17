@@ -50,7 +50,7 @@ const BetsPage = () => {
       userChat: '1234567',
       hash: '69f45e0b30510528064f2cac2de94c44',
     };
-    axios.post(process.env.REACT_APP_API_URL + '/user-info', tgMock).then((res) => {
+    axios.post(process.env.REACT_APP_API_URL + '/user-info', { ...tg.initParams, userGame: 'aviator' }).then((res) => {
       setMoney(res.data.balance);
     });
     console.log('some');
@@ -77,7 +77,12 @@ const BetsPage = () => {
           roundId,
           betId,
         };
-        await axios.post(process.env.REACT_APP_API_URL + '/close', data);
+        await axios.post(process.env.REACT_APP_API_URL + '/close', {
+          ...tg.initParams,
+          userGame: 'aviator',
+          roundId,
+          betId,
+        });
         setIsBet(false);
       } else if (!startRound && !isBet) {
         const data = {
@@ -87,7 +92,10 @@ const BetsPage = () => {
           userChat: '1234567',
           hash: '69f45e0b30510528064f2cac2de94c44',
         };
-        const res = await axios.post(process.env.REACT_APP_API_URL + '/bet', data);
+        const res = await axios.post(process.env.REACT_APP_API_URL + '/bet', {
+          ...tg.initParams,
+          userGame: 'aviator',
+        });
         setBetId(res.data.betId);
         setIsBet(true);
       }
@@ -110,7 +118,10 @@ const BetsPage = () => {
       autoConnect: true,
       path: '/socket.io/',
       transports: ['websocket', 'polling'],
-      query: tgMock,
+      query: {
+        ...tg.initParams,
+        userGame: 'aviator',
+      },
     });
 
     socket.on('connect', () => {

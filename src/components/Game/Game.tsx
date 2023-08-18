@@ -38,7 +38,18 @@ const BetsPage = () => {
   };
 
   const getMoney = async () => {
-    axios.post(process.env.REACT_APP_API_URL + '/user-info', { ...tg.initParams, userGame: 'aviator' }).then((res) => {
+    const tgMock = {
+      userId: '1234567',
+      userGame: 'aviator',
+      userChat: '1234567',
+      hash: '69f45e0b30510528064f2cac2de94c44',
+    };
+    const tgData = {
+      ...tg.initParams,
+      userGame: 'aviator',
+    };
+
+    axios.post(process.env.REACT_APP_API_URL + '/user-info', tgMock).then((res) => {
       setMoney(res.data.balance);
     });
   };
@@ -50,11 +61,19 @@ const BetsPage = () => {
       userChat: '1234567',
       hash: '69f45e0b30510528064f2cac2de94c44',
     };
-    axios.post(process.env.REACT_APP_API_URL + '/user-info', { ...tg.initParams, userGame: 'aviator' }).then((res) => {
-      setMoney(res.data.balance);
-    });
-    console.log('some');
-  }, []);
+    const tgData = {
+      ...tg.initParams,
+      userGame: 'aviator',
+    };
+    axios
+      .post(
+        process.env.REACT_APP_API_URL + '/user-info',
+        process.env.REACT_APP_WS_URI === 'development' ? tgMock : tgData,
+      )
+      .then((res) => {
+        setMoney(res.data.balance);
+      });
+  }, [endRound, winRound, loseRound]);
 
   const addBet = () => {
     setBet((prev) => prev + 10);
@@ -63,6 +82,32 @@ const BetsPage = () => {
   const minusBet = () => {
     if (bet > 10) {
       setBet((prev) => prev - 10);
+    }
+  };
+
+  const share = async () => {
+    const tgMock = {
+      userId: '1234567',
+      userGame: 'aviator',
+      userChat: '1234567',
+      hash: '69f45e0b30510528064f2cac2de94c44',
+    };
+    const tgData = {
+      ...tg.initParams,
+      userGame: 'aviator',
+    };
+    try {
+      await axios
+        .post(
+          process.env.REACT_APP_API_URL + '/share',
+          process.env.REACT_APP_WS_URI === 'development' ? tgMock : tgData,
+        )
+        .then((res) => {
+          setMoney(res.data.balance);
+        });
+      tg.shareScore();
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -77,12 +122,16 @@ const BetsPage = () => {
           roundId,
           betId,
         };
-        await axios.post(process.env.REACT_APP_API_URL + '/close', {
+        const tgData = {
           ...tg.initParams,
           userGame: 'aviator',
           roundId,
           betId,
-        });
+        };
+        await axios.post(
+          process.env.REACT_APP_API_URL + '/close',
+          process.env.REACT_APP_WS_URI === 'development' ? data : tgData,
+        );
         setIsBet(false);
       } else if (!startRound && !isBet) {
         const data = {
@@ -92,11 +141,16 @@ const BetsPage = () => {
           userChat: '1234567',
           hash: '69f45e0b30510528064f2cac2de94c44',
         };
-        const res = await axios.post(process.env.REACT_APP_API_URL + '/bet', {
+        const tgData = {
           ...tg.initParams,
           amount: bet,
           userGame: 'aviator',
-        });
+        };
+
+        const res = await axios.post(
+          process.env.REACT_APP_API_URL + '/bet',
+          process.env.REACT_APP_WS_URI === 'development' ? data : tgData,
+        );
         setBetId(res.data.betId);
         setIsBet(true);
       }
@@ -114,15 +168,16 @@ const BetsPage = () => {
       userMessage: 'AgAAAAFvBwBTcVITzMj0Y81zi3E',
       hash: '69f45e0b30510528064f2cac2de94c44',
     };
+    const tgData = {
+      ...tg.initParams,
+      userGame: 'aviator',
+    };
 
     const socket = io(wsUri, {
       autoConnect: true,
       path: '/socket.io/',
       transports: ['websocket', 'polling'],
-      query: {
-        ...tg.initParams,
-        userGame: 'aviator',
-      },
+      query: process.env.REACT_APP_WS_URI === 'development' ? tgMock : tgData,
     });
 
     socket.on('connect', () => {
@@ -148,12 +203,14 @@ const BetsPage = () => {
 
           case Events.WIN:
             setWinRound(true);
-            getMoney();
+            console.log('win');
+
             break;
 
           case Events.LOSE:
             setLoseRound(true);
-            getMoney();
+            console.log('lose');
+
             break;
 
           case Events.TICK:
@@ -168,8 +225,6 @@ const BetsPage = () => {
 
     setSocket(socket);
   }, []);
-
-  console.log(isBet);
 
   return (
     <BasicLayouts>
@@ -191,6 +246,22 @@ const BetsPage = () => {
           ) : null}
         </div>
         <div className="flex flex-col gap-5 absolute bottom-[100px] items-center justify-center">
+          <div className="relative bg-[#A77DFE] rounded-2xl w-[255px]">
+            <Money
+              classNameButton="!justify-start pl-[22px]"
+              money={'Share and get +100'}
+              classNameText="text-[16px] text-white"
+              moneyHeight="18"
+              moneyWidth="18"
+            />
+            <div className="absolute right-0 -top-1 w-[52px]">
+              <PlayButton
+                onClick={share}
+                text="Share"
+                className="button-play bg-[#67EB00] text-base px-[10px] tracking-[0.64px]"
+              />
+            </div>
+          </div>
           {isBet ? (
             <OnGameReward money={bet * multiply} />
           ) : startRound ? (
@@ -201,6 +272,7 @@ const BetsPage = () => {
             <>
               <div className="flex flex-col">
                 <span className="text-xl font-bold uppercase">{'balance'}</span>
+
                 <Money money={startRound ? bet : money} classNameText={'text-[43px]'} />
               </div>
 

@@ -66,10 +66,7 @@ const BetsPage = () => {
       userGame: 'aviator',
     };
     axios
-      .post(
-        process.env.REACT_APP_API_URL + '/user-info',
-        process.env.REACT_APP_WS_URI === 'development' ? tgMock : tgData,
-      )
+      .post(process.env.REACT_APP_API_URL + '/user-info', process.env.NODE_ENV === 'development' ? tgMock : tgData)
       .then((res) => {
         setMoney(res.data.balance);
       });
@@ -98,10 +95,7 @@ const BetsPage = () => {
     };
     try {
       await axios
-        .post(
-          process.env.REACT_APP_API_URL + '/share',
-          process.env.REACT_APP_WS_URI === 'development' ? tgMock : tgData,
-        )
+        .post(process.env.REACT_APP_API_URL + '/share', process.env.NODE_ENV === 'development' ? tgMock : tgData)
         .then((res) => {
           setMoney(res.data.balance);
         });
@@ -130,7 +124,7 @@ const BetsPage = () => {
         };
         await axios.post(
           process.env.REACT_APP_API_URL + '/close',
-          process.env.REACT_APP_WS_URI === 'development' ? data : tgData,
+          process.env.NODE_ENV === 'development' ? data : tgData,
         );
         setIsBet(false);
       } else if (!startRound && !isBet) {
@@ -149,7 +143,7 @@ const BetsPage = () => {
 
         const res = await axios.post(
           process.env.REACT_APP_API_URL + '/bet',
-          process.env.REACT_APP_WS_URI === 'development' ? data : tgData,
+          process.env.NODE_ENV === 'development' ? data : tgData,
         );
         setBetId(res.data.betId);
         setIsBet(true);
@@ -177,7 +171,7 @@ const BetsPage = () => {
       autoConnect: true,
       path: '/socket.io/',
       transports: ['websocket', 'polling'],
-      query: process.env.REACT_APP_WS_URI === 'development' ? tgMock : tgData,
+      query: process.env.NODE_ENV === 'development' ? tgMock : tgData,
     });
 
     socket.on('connect', () => {
@@ -246,36 +240,53 @@ const BetsPage = () => {
           ) : null}
         </div>
         <div className="flex flex-col gap-5 absolute bottom-[100px] items-center justify-center">
-          <div className="relative bg-[#A77DFE] rounded-2xl w-[255px]">
-            <Money
-              classNameButton="!justify-start pl-[22px]"
-              money={'Share and get +100'}
-              classNameText="text-[16px] text-white"
-              moneyHeight="18"
-              moneyWidth="18"
-            />
-            <div className="absolute right-0 -top-1 w-[52px]">
-              <PlayButton
-                onClick={share}
-                text="Share"
-                className="button-play bg-[#67EB00] text-base px-[10px] tracking-[0.64px]"
-              />
-            </div>
-          </div>
           {isBet ? (
             <OnGameReward money={bet * multiply} />
           ) : startRound ? (
-            <BgButtons>
-              <div className="text-xl uppercase font-bold whitespace-nowrap">Wait next round</div>
-            </BgButtons>
+            <>
+              <div className="relative bg-[#A77DFE] rounded-2xl w-[255px]">
+                <Money
+                  classNameButton="!justify-start pl-[22px]"
+                  money={'Share and get +100'}
+                  classNameText="text-[16px] text-white"
+                  moneyHeight="18"
+                  moneyWidth="18"
+                />
+                <div className="absolute right-0 -top-1 w-[52px]">
+                  <PlayButton
+                    onClick={share}
+                    text="Share"
+                    className="button-play bg-[#67EB00] text-base px-[10px] tracking-[0.64px]"
+                  />
+                </div>
+              </div>
+              <BgButtons>
+                <div className="text-xl uppercase font-bold whitespace-nowrap">Wait next round</div>
+              </BgButtons>
+            </>
           ) : (
             <>
               <div className="flex flex-col">
-                <span className="text-xl font-bold uppercase">{'balance'}</span>
+                <span className="text-xl font-bold uppercase">balance</span>
 
                 <Money money={startRound ? bet : money} classNameText={'text-[43px]'} />
               </div>
-
+              <div className="relative bg-[#A77DFE] rounded-2xl w-[255px]">
+                <Money
+                  classNameButton="!justify-start pl-[22px]"
+                  money={'Share and get +100'}
+                  classNameText="text-[16px] text-white"
+                  moneyHeight="18"
+                  moneyWidth="18"
+                />
+                <div className="absolute right-0 -top-1 w-[52px]">
+                  <PlayButton
+                    onClick={share}
+                    text="Share"
+                    className="button-play bg-[#67EB00] text-base px-[10px] tracking-[0.64px]"
+                  />
+                </div>
+              </div>
               <Bets bet={bet} setBet={setBet} addBet={addBet} minusBet={minusBet} money={money} />
             </>
           )}

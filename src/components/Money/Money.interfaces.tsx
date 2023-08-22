@@ -2,7 +2,8 @@ import { HTMLProps } from 'react';
 
 export type MoneyProps = {
   classNameText?: HTMLProps<HTMLElement>['className'];
-  money: number;
+  classNameButton?: HTMLProps<HTMLElement>['className'];
+  money: number | string;
   moneyWidth?: string;
   moneyHeight?: string;
 };

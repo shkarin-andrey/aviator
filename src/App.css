@@ -98,3 +98,37 @@
   top: 0;
   left: 0;
 }
+
+.bg_canvas-start {
+  background: linear-gradient(180deg, #9c59fe 0%, #6f53fd 100%);
+}
+
+.bg_canvas-game {
+  background: linear-gradient(180deg, #231451 0%, #8055fd 100%);
+}
+
+.progress-bar-value {
+  background-color: red;
+  animation: animation1 20s, animation2 10s;
+  animation-iteration-count: 1;
+  height: 100%;
+  width: 0px;
+}
+
+@keyframes animation1 {
+  0% {
+    width: 130px;
+  }
+  100% {
+    width: 0px;
+  }
+}
+
+@keyframes animation2 {
+  0% {
+    width: 210px;
+  }
+  100%% {
+    width: 130px;
+  }
+}

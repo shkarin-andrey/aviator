@@ -12,55 +12,25 @@ type ImageArray = {
   image: HTMLImageElement;
   startPos: StartPosition;
   size: SizeElement;
+  initValue: StartPosition;
+  small: boolean;
 };
 
 interface DrawProps {
   canvas: React.MutableRefObject<HTMLCanvasElement | null>;
-  rotation?: number;
-  x?: number;
-  // cloudImage: HTMLImageElement;
-  // startPos: StartPosition;
-  // size: SizeElement;
   imageArray: ImageArray[];
+  startGame: boolean;
+  airplane: HTMLImageElement;
+  airplanePos: StartPosition;
 }
 
-// export const draw = (props: DrawProps) => {
-//   const { canvas, logoRef, rotation, x: xCord } = props;
-//   const ctx = canvas?.current?.getContext('2d');
-//   const logo = logoRef.current;
-//   if (!ctx || !logo) {
-//     return;
-//   }
-//   const canvasWidth = canvas.current!.width;
-//   const canvasHeight = canvas.current!.height;
-//   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-//   // const x = canvasWidth / 2;
-//   // const y = canvasHeight / 2;
-//   // ctx.translate(x, y);
-//   // ctx.rotate(rotation);
-//   const { width, height } = logo;
-
-//   // ctx.drawImage(logo, -width / 2, , width, height);
-
-//   // let middlePos = canvas.width/2 - piece.width/2;
-
-//   // // Brick stops when it gets to the middle of the canvas
-//   // if(pieceLeftSidePos > middlePos) piece.x -= 2;
-//   //  window.requestAnimationFrame(gameLoop)
-//   // ctx.rotate(-rotation);
-//   // ctx.translate(-x, -y);
-// };
-
 export const getAnimateCloud = (props: DrawProps) => {
-  const { canvas, imageArray } = props;
-
-  // const piece = { image: cloudImage, ...startPos, ...size };
-
-  // cloudImage.onload = () => window.requestAnimationFrame(gameLoop);
+  const { canvas, imageArray, startGame, airplane, airplanePos } = props;
+  let top = true;
 
   (function gameLoop() {
     const canvasCurrent = canvas.current;
+
     if (canvasCurrent && canvas) {
       const ctx = canvasCurrent.getContext('2d');
       if (ctx == null) return;
@@ -70,20 +40,46 @@ export const getAnimateCloud = (props: DrawProps) => {
       imageArray.forEach((piece) => {
         ctx.drawImage(piece.image, piece.startPos.x, piece.startPos.y);
         const pieceLeftSidePos = piece.startPos.x;
+        // const pieceHeightSidePos = piece.startPos.y;
 
-        // Brick stops when it gets to the middle of the canvas
         if (pieceLeftSidePos < 0 - piece.size.width - 20) {
-          piece.startPos.x = canvasCurrent.width;
+          if (piece.small) {
+            piece.startPos.x = canvasCurrent.width + piece.size.width * 2 + 20;
+            // piece.startPos.y = piece.initValue.y;
+          } else {
+            piece.startPos.x = canvasCurrent.width + piece.size.width + 20;
+            // piece.startPos.y = piece.initValue.y;
+          }
         }
-        piece.startPos.x -= 2;
+
+        if (startGame) {
+          if (piece.small) {
+            piece.startPos.x -= 1;
+            // piece.startPos.y += 0.5;
+          } else {
+            piece.startPos.x -= 1;
+            // piece.startPos.y += 0.5;
+          }
+        } else {
+          piece.startPos.x -= 1.5;
+        }
       });
 
-      // Draw at coordinates x and y
-      // ctx.drawImage(piece.image, piece.x, piece.y);
-      // ctx.drawImage(piece.image, piece.x, piece.y + 20);
+      ctx.drawImage(airplane, airplanePos.x, airplanePos.y);
+
+      if (airplanePos.y > 150 && top) {
+        airplanePos.y -= 0.3;
+        top = false;
+      } else if (airplanePos.y < 50 && !top) {
+        airplanePos.y += 0.3;
+        top = true;
+      } else if (top) {
+        airplanePos.y += 0.3;
+      } else if (!top) {
+        airplanePos.y -= 0.3;
+      }
 
       window.requestAnimationFrame(gameLoop); // Needed to keep looping
     }
-    // Clear canvas
   })();
 };

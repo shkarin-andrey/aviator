@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { airplane } from './Airplane';
 import { cloud, cloudSmall } from './Cloud';
 import { getAnimateCloud } from './helper';
 
@@ -29,8 +30,12 @@ const CanvasAirPlaneAndCloud = (props: any) => {
 
       const image = new Image(40, 20);
       const smallCloud = new Image(20, 10);
+      const imageAirplane = new Image(120, 52);
+
       image.src = `data:image/svg+xml;base64,${window.btoa(cloud)}`;
       smallCloud.src = `data:image/svg+xml;base64,${window.btoa(cloudSmall)}`;
+
+      imageAirplane.src = `data:image/svg+xml;base64,${window.btoa(airplane)}`;
 
       getAnimateCloud({
         canvas: canvasRef,
@@ -39,43 +44,60 @@ const CanvasAirPlaneAndCloud = (props: any) => {
             image,
             size: { width: 40, height: 20 },
             startPos: { x: 200, y: 0 },
+            initValue: { x: 200, y: 0 },
+            small: false,
           },
           {
             image: smallCloud,
             size: { width: 20, height: 10 },
             startPos: { x: 300, y: 40 },
+            initValue: { x: 300, y: 40 },
+            small: true,
           },
           {
             image: smallCloud,
             size: { width: 20, height: 10 },
             startPos: { x: 20, y: 50 },
+            initValue: { x: 20, y: 50 },
+            small: true,
           },
           {
             image: image,
             size: { width: 40, height: 20 },
-            startPos: { x: 90, y: 40 },
+            startPos: { x: 90, y: 50 },
+            initValue: { x: 90, y: 50 },
+            small: false,
           },
           {
             image: image,
             size: { width: 40, height: 20 },
-            startPos: { x: 240, y: 120 },
+            startPos: { x: 240, y: 100 },
+            initValue: { x: 240, y: 100 },
+            small: false,
           },
           {
             image: smallCloud,
             size: { width: 20, height: 10 },
             startPos: { x: 80, y: 160 },
+            initValue: { x: 80, y: 160 },
+            small: true,
           },
           {
             image: smallCloud,
             size: { width: 20, height: 10 },
             startPos: { x: 300, y: 165 },
+            initValue: { x: 300, y: 165 },
+            small: true,
           },
         ],
+        startGame: true,
+        airplane: imageAirplane,
+        airplanePos: { x: ctx.canvas.width / 2 - 120, y: ctx.canvas.height / 2 - 52 },
       });
     }
   }, []);
 
-  return <canvas width={window.innerWidth} height={200} ref={canvasRef} {...props} />;
+  return <canvas width={window.innerWidth} height={300} ref={canvasRef} {...props} />;
 };
 
 export default CanvasAirPlaneAndCloud;

@@ -1,8 +1,16 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Game from '../components/Game';
-import BasicLayouts from '../components/Layouts/BasicLayout';
+import BasicLayouts, { GameContext } from '../components/Layouts/BasicLayout';
 import Logo from '../components/Logo';
 import PlayButton from '../components/PlayButton';
+
+const Check = () => {
+  const context = useContext(GameContext);
+  useEffect(() => {
+    context.onStartScreen();
+  }, []);
+  return <></>;
+};
 
 const BetsPage = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -15,7 +23,10 @@ const BetsPage = () => {
     <BasicLayouts>
       <div className="App-header relative z-50 ">
         {isPlaying ? (
-          <Game />
+          <>
+            <Check></Check>
+            <Game />
+          </>
         ) : (
           <div className="flex flex-col justify-between h-screen py-[60px]">
             <Logo></Logo>

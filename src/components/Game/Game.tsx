@@ -1,15 +1,16 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useTelegramGameProxy } from '../../hooks/use-telegram-game-proxy';
 import { Events } from '../../interfaces/events.enum';
 import { SocketEvents } from '../../interfaces/SocketEvent';
 import Bets from '../Bets';
 import BgButtons from '../BgButtons';
-import BasicLayouts from '../Layouts/BasicLayout';
+import BasicLayouts, { GameContext } from '../Layouts/BasicLayout';
 import Money from '../Money';
 import OnGameReward from '../OnGameReward';
 import PlayButton from '../PlayButton';
+import ProgressBar from '../ProgressBar';
 
 const wsUri: string = process.env.REACT_APP_WS_URI || '';
 
@@ -26,6 +27,7 @@ const BetsPage = () => {
   const [loseRound, setLoseRound] = useState<boolean>(false);
   const [roundId, setRoundId] = useState<number>();
   const [betId, setBetId] = useState<number>();
+  const context = useContext(GameContext);
 
   const [isBet, setIsBet] = useState<boolean>(false);
 
@@ -35,23 +37,6 @@ const BetsPage = () => {
     setWinRound(false);
     setLoseRound(false);
     setMultiply(1);
-  };
-
-  const getMoney = async () => {
-    const tgMock = {
-      userId: '1234567',
-      userGame: 'aviator',
-      userChat: '1234567',
-      hash: '69f45e0b30510528064f2cac2de94c44',
-    };
-    const tgData = {
-      ...tg.initParams,
-      userGame: 'aviator',
-    };
-
-    axios.post(process.env.REACT_APP_API_URL + '/user-info', tgMock).then((res) => {
-      setMoney(res.data.balance);
-    });
   };
 
   useEffect(() => {
@@ -66,10 +51,7 @@ const BetsPage = () => {
       userGame: 'aviator',
     };
     axios
-      .post(
-        process.env.REACT_APP_API_URL + '/user-info',
-        process.env.REACT_APP_WS_URI === 'development' ? tgMock : tgData,
-      )
+      .post(process.env.REACT_APP_API_URL + '/user-info', process.env.NODE_ENV === 'development' ? tgMock : tgData)
       .then((res) => {
         setMoney(res.data.balance);
       });
@@ -98,10 +80,7 @@ const BetsPage = () => {
     };
     try {
       await axios
-        .post(
-          process.env.REACT_APP_API_URL + '/share',
-          process.env.REACT_APP_WS_URI === 'development' ? tgMock : tgData,
-        )
+        .post(process.env.REACT_APP_API_URL + '/share', process.env.NODE_ENV === 'development' ? tgMock : tgData)
         .then((res) => {
           setMoney(res.data.balance);
         });
@@ -130,7 +109,7 @@ const BetsPage = () => {
         };
         await axios.post(
           process.env.REACT_APP_API_URL + '/close',
-          process.env.REACT_APP_WS_URI === 'development' ? data : tgData,
+          process.env.NODE_ENV === 'development' ? data : tgData,
         );
         setIsBet(false);
       } else if (!startRound && !isBet) {
@@ -149,7 +128,7 @@ const BetsPage = () => {
 
         const res = await axios.post(
           process.env.REACT_APP_API_URL + '/bet',
-          process.env.REACT_APP_WS_URI === 'development' ? data : tgData,
+          process.env.NODE_ENV === 'development' ? data : tgData,
         );
         setBetId(res.data.betId);
         setIsBet(true);
@@ -177,7 +156,7 @@ const BetsPage = () => {
       autoConnect: true,
       path: '/socket.io/',
       transports: ['websocket', 'polling'],
-      query: process.env.REACT_APP_WS_URI === 'development' ? tgMock : tgData,
+      query: process.env.NODE_ENV === 'development' ? tgMock : tgData,
     });
 
     socket.on('connect', () => {
@@ -203,13 +182,11 @@ const BetsPage = () => {
 
           case Events.WIN:
             setWinRound(true);
-            console.log('win');
 
             break;
 
           case Events.LOSE:
             setLoseRound(true);
-            console.log('lose');
 
             break;
 
@@ -243,39 +220,61 @@ const BetsPage = () => {
               text={`${multiply}X`}
               disabled={true}
             />
-          ) : null}
+          ) : (
+            <div className="flex flex-col min-w[220px] gap-[14px]">
+              <span className="whitespace-nowrap text-xl font-bold tracking-[2px]">Time to next round</span>
+              <ProgressBar />
+            </div>
+          )}
         </div>
         <div className="flex flex-col gap-5 absolute bottom-[100px] items-center justify-center">
-          <div className="relative bg-[#A77DFE] rounded-2xl w-[255px]">
-            <Money
-              classNameButton="!justify-start pl-[22px]"
-              money={'Share and get +100'}
-              classNameText="text-[16px] text-white"
-              moneyHeight="18"
-              moneyWidth="18"
-            />
-            <div className="absolute right-0 -top-1 w-[52px]">
-              <PlayButton
-                onClick={share}
-                text="Share"
-                className="button-play bg-[#67EB00] text-base px-[10px] tracking-[0.64px]"
-              />
-            </div>
-          </div>
           {isBet ? (
             <OnGameReward money={bet * multiply} />
           ) : startRound ? (
-            <BgButtons>
-              <div className="text-xl uppercase font-bold whitespace-nowrap">Wait next round</div>
-            </BgButtons>
+            <>
+              <div className="relative bg-[#A77DFE] rounded-2xl w-[255px]">
+                <Money
+                  classNameButton="!justify-start pl-[22px]"
+                  money={'Share and get +100'}
+                  classNameText="text-[16px] text-white"
+                  moneyHeight="18"
+                  moneyWidth="18"
+                />
+                <div className="absolute right-0 -top-1 w-[52px]">
+                  <PlayButton
+                    onClick={share}
+                    text="Share"
+                    className="button-play bg-[#67EB00] text-base px-[10px] tracking-[0.64px]"
+                  />
+                </div>
+              </div>
+              <BgButtons>
+                <div className="text-xl uppercase font-bold whitespace-nowrap">Wait next round</div>
+              </BgButtons>
+            </>
           ) : (
             <>
               <div className="flex flex-col">
-                <span className="text-xl font-bold uppercase">{'balance'}</span>
+                <span className="text-xl font-bold uppercase">balance</span>
 
                 <Money money={startRound ? bet : money} classNameText={'text-[43px]'} />
               </div>
-
+              <div className="relative bg-[#A77DFE] rounded-2xl w-[255px]">
+                <Money
+                  classNameButton="!justify-start pl-[22px]"
+                  money={'Share and get +100'}
+                  classNameText="text-[16px] text-white"
+                  moneyHeight="18"
+                  moneyWidth="18"
+                />
+                <div className="absolute right-0 -top-1 w-[52px]">
+                  <PlayButton
+                    onClick={share}
+                    text="Share"
+                    className="button-play bg-[#67EB00] text-base px-[10px] tracking-[0.64px]"
+                  />
+                </div>
+              </div>
               <Bets bet={bet} setBet={setBet} addBet={addBet} minusBet={minusBet} money={money} />
             </>
           )}

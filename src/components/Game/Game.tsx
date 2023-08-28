@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+import CoinRewardIcon from '../../assets/svg/CoinRewardIcon';
+import SuccessIcon from '../../assets/svg/SuccessIcon';
 import { useTelegramGameProxy } from '../../hooks/use-telegram-game-proxy';
 import { Events } from '../../interfaces/events.enum';
 import { SocketEvents } from '../../interfaces/SocketEvent';
@@ -27,6 +29,7 @@ const BetsPage = () => {
   const [loseRound, setLoseRound] = useState<boolean>(false);
   const [roundId, setRoundId] = useState<number>();
   const [betId, setBetId] = useState<number>();
+  const [closeBet, setCloseBet] = useState<boolean>(false);
   const context = useContext(GameContext);
 
   const [isBet, setIsBet] = useState<boolean>(false);
@@ -37,6 +40,7 @@ const BetsPage = () => {
     setWinRound(false);
     setLoseRound(false);
     setMultiply(1);
+    setCloseBet(false);
   };
 
   useEffect(() => {
@@ -111,7 +115,7 @@ const BetsPage = () => {
           process.env.REACT_APP_API_URL + '/close',
           process.env.NODE_ENV === 'development' ? data : tgData,
         );
-        setIsBet(false);
+        setCloseBet(true);
       } else if (!startRound && !isBet) {
         const data = {
           amount: bet,
@@ -191,6 +195,9 @@ const BetsPage = () => {
             break;
 
           case Events.TICK:
+            if (!startRound) {
+              setStartRound(true);
+            }
             setMultiply(multiplier);
             break;
 
@@ -212,24 +219,61 @@ const BetsPage = () => {
         <span>Победа раунда {winRound ? 'true' : 'false'}</span>
         <span>Поражение раунда {loseRound ? 'true' : 'false'}</span>
         <span>Multiply раунда {multiply}</span> */}
-        <div className="flex flex-col absolute top-[100px]">
+
+        <div className="flex flex-col absolute top-[50px] items-center gap-[85px] justify-center">
           {startRound ? (
             <PlayButton
-              className="purpure-gradient button-play min-w-[145px]"
+              className="purpure-gradient button-play min-w-[75px]"
               onClick={startGame}
               text={`${multiply}X`}
               disabled={true}
             />
           ) : (
-            <div className="flex flex-col min-w[220px] gap-[14px]">
-              <span className="whitespace-nowrap text-xl font-bold tracking-[2px]">Time to next round</span>
-              <ProgressBar />
+            <div className="flex flex-col gap-[80px] justify-center items-center">
+              <div className="flex flex-col min-w[220px] gap-[14px]">
+                <span className="whitespace-nowrap text-xl font-bold tracking-[2px]">Time to next round</span>
+                <ProgressBar />
+              </div>
             </div>
           )}
+          <div
+            className={`relative w-fit invisible scale-0 transition-all duration-1000 ease-in-out ${
+              winRound && endRound ? '!visible !scale-150' : ''
+            }`}
+          >
+            <div
+              className={`absolute scale-0 transition-all duration-1000 ease-out -top-[45px] ${
+                winRound && endRound ? '!scale-150' : ''
+              }  left-[55%] -translate-x-[55%]`}
+            >
+              <SuccessIcon width={winRound && endRound ? '75' : '0'} height={winRound && endRound ? '50' : '0'} />
+            </div>
+            <div className="bg-white flex flex-row rounded-xl p-2 justify-between gap-3">
+              <div className="flex flex-col justify-center items-center">
+                <span className={`text-[#60CFFF] text-[10px]  whitespace-nowrap`}>Win factor</span>
+                <div className="bg-[#C2FDFF] text-[12px] font-bold text-center rounded-xl text-[#228AED] min-w-[50px]">
+                  {multiply} X
+                </div>
+              </div>
+              <div className="flex flex-col justify-center items-center">
+                <span className="text-[#60CFFF] text-[10px] whitespace-nowrap">Reward</span>
+                <div className="bg-[#C2FDFF] text-[12px] font-bold text-center rounded-xl text-[#228AED] flex flex-row gap-1 justify-center items-center min-w-[50px]">
+                  <CoinRewardIcon height="7.5" width="10" />
+                  <span>{Math.floor(bet * multiply)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-5 absolute bottom-[100px] items-center justify-center">
+        <div className="flex flex-col gap-5 absolute bottom-[50px] items-center justify-center">
           {isBet ? (
-            <OnGameReward money={bet * multiply} />
+            closeBet ? (
+              <BgButtons>
+                <div className="text-xl uppercase font-bold whitespace-nowrap">Wait end round</div>
+              </BgButtons>
+            ) : (
+              <OnGameReward money={bet * multiply} />
+            )
           ) : startRound ? (
             <>
               <div className="relative bg-[#A77DFE] rounded-2xl w-[255px]">
@@ -280,13 +324,15 @@ const BetsPage = () => {
           )}
           {startRound ? (
             isBet ? (
-              <BgButtons>
-                <PlayButton
-                  className="orange-gradient button-play whitespace-nowrap"
-                  onClick={startGame}
-                  text={'cash out'}
-                />
-              </BgButtons>
+              closeBet ? null : (
+                <BgButtons>
+                  <PlayButton
+                    className="orange-gradient button-play whitespace-nowrap"
+                    onClick={startGame}
+                    text={'cash out'}
+                  />
+                </BgButtons>
+              )
             ) : null
           ) : isBet ? (
             <BgButtons>

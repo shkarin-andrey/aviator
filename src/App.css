@@ -109,7 +109,7 @@
 
 .progress-bar-value {
   background-color: red;
-  animation: animation1 25s, animation2 10s;
+  animation: animation1 35s, animation2 10s;
   animation-iteration-count: 1;
   height: 100%;
   width: 0px;

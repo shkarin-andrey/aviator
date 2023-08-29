@@ -20,7 +20,7 @@ const BetsPage = () => {
   const tg = useTelegramGameProxy();
   const [socket, setSocket] = useState<Socket>();
   const [multiply, setMultiply] = useState<number>(1);
-  const [bet, setBet] = useState<number>(1);
+  const [bet, setBet] = useState<number>(10);
   const [money, setMoney] = useState<number>(100);
 
   const [startRound, setStartRound] = useState<boolean>(false);
@@ -31,6 +31,8 @@ const BetsPage = () => {
   const [betId, setBetId] = useState<number>();
   const [closeBet, setCloseBet] = useState<boolean>(false);
   const context = useContext(GameContext);
+  const [winAmount, setWinAmount] = useState(0);
+  const [winMultiply, setWinMultiply] = useState('0');
 
   const [isBet, setIsBet] = useState<boolean>(false);
 
@@ -167,7 +169,7 @@ const BetsPage = () => {
       console.log('connect');
 
       socket.on('events', (events: SocketEvents) => {
-        const { event, multiplier, roundId } = events;
+        const { event, multiplier, roundId, amount } = events;
 
         switch (event) {
           case Events.START_ROUND:
@@ -185,7 +187,10 @@ const BetsPage = () => {
             break;
 
           case Events.WIN:
+            const multiplyWin = (amount / bet).toFixed(2);
             setWinRound(true);
+            setWinAmount(amount);
+            setWinMultiply(multiplyWin);
 
             break;
 
@@ -252,14 +257,14 @@ const BetsPage = () => {
               <div className="flex flex-col justify-center items-center">
                 <span className={`text-[#60CFFF] text-[10px]  whitespace-nowrap`}>Win factor</span>
                 <div className="bg-[#C2FDFF] text-[12px] font-bold text-center rounded-xl text-[#228AED] min-w-[50px]">
-                  {multiply} X
+                  {winMultiply} X
                 </div>
               </div>
               <div className="flex flex-col justify-center items-center">
                 <span className="text-[#60CFFF] text-[10px] whitespace-nowrap">Reward</span>
                 <div className="bg-[#C2FDFF] text-[12px] font-bold text-center rounded-xl text-[#228AED] flex flex-row gap-1 justify-center items-center min-w-[50px]">
                   <CoinRewardIcon height="7.5" width="10" />
-                  <span>{Math.floor(bet * multiply)}</span>
+                  <span>{Math.floor(winAmount)}</span>
                 </div>
               </div>
             </div>
@@ -320,6 +325,7 @@ const BetsPage = () => {
                 </div>
               </div>
               <Bets bet={bet} setBet={setBet} addBet={addBet} minusBet={minusBet} money={money} />
+              <PlayButton className="green-gradient button-play" onClick={startGame} text={'make bet'} />
             </>
           )}
           {startRound ? (
@@ -334,13 +340,11 @@ const BetsPage = () => {
                 </BgButtons>
               )
             ) : null
-          ) : isBet ? (
+          ) : isBet && !closeBet ? (
             <BgButtons>
               <span className="text-xl uppercase font-bold whitespace-nowrap">Wait start round</span>
             </BgButtons>
-          ) : (
-            <PlayButton className="green-gradient button-play" onClick={startGame} text={'make bet'} />
-          )}
+          ) : null}
         </div>
       </div>
     </BasicLayouts>

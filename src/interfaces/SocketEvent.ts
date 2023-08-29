@@ -5,4 +5,5 @@ export type SocketEvents = {
   roundId: number;
   nonce: number;
   multiplier: number;
+  amount: number;
 };

@@ -45,7 +45,7 @@ const BetsPage = () => {
     setCloseBet(false);
   };
 
-  useEffect(() => {
+  const getMoney = async () => {
     const tgMock = {
       userId: '1234567',
       userGame: 'aviator',
@@ -56,11 +56,15 @@ const BetsPage = () => {
       ...tg.initParams,
       userGame: 'aviator',
     };
-    axios
+    await axios
       .post(process.env.REACT_APP_API_URL + '/user-info', process.env.NODE_ENV === 'development' ? tgMock : tgData)
       .then((res) => {
         setMoney(res.data.balance);
       });
+  };
+
+  useEffect(() => {
+    getMoney();
   }, [endRound, winRound, loseRound]);
 
   const addBet = () => {
@@ -85,12 +89,12 @@ const BetsPage = () => {
       userGame: 'aviator',
     };
     try {
-      await axios
-        .post(process.env.REACT_APP_API_URL + '/share', process.env.NODE_ENV === 'development' ? tgMock : tgData)
-        .then((res) => {
-          setMoney(res.data.balance);
-        });
+      await axios.post(
+        process.env.REACT_APP_API_URL + '/share',
+        process.env.NODE_ENV === 'development' ? tgMock : tgData,
+      );
       tg.shareScore();
+      getMoney();
     } catch (error) {
       console.log(error);
     }

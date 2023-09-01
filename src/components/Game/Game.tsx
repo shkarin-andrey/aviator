@@ -19,9 +19,9 @@ const wsUri: string = process.env.REACT_APP_WS_URI || '';
 const BetsPage = () => {
   const tg = useTelegramGameProxy();
   const [socket, setSocket] = useState<Socket>();
-  const [multiply, setMultiply] = useState<number>(1);
+  const [multiply, setMultiply] = useState<string>('1.00');
   const [bet, setBet] = useState<number>(10);
-  const [money, setMoney] = useState<number>(100);
+  const [money, setMoney] = useState<number>(0);
 
   const [startRound, setStartRound] = useState<boolean>(false);
   const [endRound, setEndRound] = useState<boolean>(false);
@@ -41,11 +41,11 @@ const BetsPage = () => {
     setEndRound(false);
     setWinRound(false);
     setLoseRound(false);
-    setMultiply(1);
+    setMultiply('1.00');
     setCloseBet(false);
   };
 
-  useEffect(() => {
+  const getMoney = async () => {
     const tgMock = {
       userId: '1234567',
       userGame: 'aviator',
@@ -56,11 +56,15 @@ const BetsPage = () => {
       ...tg.initParams,
       userGame: 'aviator',
     };
-    axios
+    await axios
       .post(process.env.REACT_APP_API_URL + '/user-info', process.env.NODE_ENV === 'development' ? tgMock : tgData)
       .then((res) => {
         setMoney(res.data.balance);
       });
+  };
+
+  useEffect(() => {
+    getMoney();
   }, [endRound, winRound, loseRound]);
 
   const addBet = () => {
@@ -85,11 +89,11 @@ const BetsPage = () => {
       userGame: 'aviator',
     };
     try {
-      await axios
-        .post(process.env.REACT_APP_API_URL + '/share', process.env.NODE_ENV === 'development' ? tgMock : tgData)
-        .then((res) => {
-          setMoney(res.data.balance);
-        });
+      await axios.post(
+        process.env.REACT_APP_API_URL + '/share',
+        process.env.NODE_ENV === 'development' ? tgMock : tgData,
+      );
+      getMoney();
       tg.shareScore();
     } catch (error) {
       console.log(error);
@@ -166,8 +170,6 @@ const BetsPage = () => {
     });
 
     socket.on('connect', () => {
-      console.log('connect');
-
       socket.on('events', (events: SocketEvents) => {
         const { event, multiplier, roundId, amount } = events;
 
@@ -175,14 +177,14 @@ const BetsPage = () => {
           case Events.START_ROUND:
             clearGame();
             setStartRound(true);
-            setMultiply(1);
+            setMultiply('1.00');
             setRoundId(roundId);
             break;
 
           case Events.FINISH_ROUND:
             setEndRound(true);
             setStartRound(false);
-            setMultiply(1);
+            setMultiply('1.00');
             setIsBet(false);
             break;
 
@@ -203,7 +205,7 @@ const BetsPage = () => {
             if (!startRound) {
               setStartRound(true);
             }
-            setMultiply(multiplier);
+            setMultiply(multiplier.toFixed(2));
             break;
 
           default:
@@ -277,7 +279,7 @@ const BetsPage = () => {
                 <div className="text-xl uppercase font-bold whitespace-nowrap">Wait end round</div>
               </BgButtons>
             ) : (
-              <OnGameReward money={bet * multiply} />
+              <OnGameReward money={bet * Number(multiply)} />
             )
           ) : startRound ? (
             <>
@@ -297,6 +299,7 @@ const BetsPage = () => {
                   />
                 </div>
               </div>
+
               <BgButtons>
                 <div className="text-xl uppercase font-bold whitespace-nowrap">Wait next round</div>
               </BgButtons>
@@ -308,22 +311,25 @@ const BetsPage = () => {
 
                 <Money money={startRound ? bet : money} classNameText={'text-[43px]'} />
               </div>
-              <div className="relative bg-[#A77DFE] rounded-2xl w-[255px]">
-                <Money
-                  classNameButton="!justify-start pl-[22px]"
-                  money={'Share and get +100'}
-                  classNameText="text-[16px] text-white"
-                  moneyHeight="18"
-                  moneyWidth="18"
-                />
-                <div className="absolute right-0 -top-1 w-[52px]">
-                  <PlayButton
-                    onClick={share}
-                    text="Share"
-                    className="button-play bg-[#67EB00] text-base px-[10px] tracking-[0.64px]"
+              <div className="flex w-full">
+                <div className="relative bg-[#A77DFE] rounded-2xl w-[255px]">
+                  <Money
+                    classNameButton="!justify-start pl-[22px]"
+                    money={'Share and get +100'}
+                    classNameText="text-[16px] text-white"
+                    moneyHeight="18"
+                    moneyWidth="18"
                   />
+                  <div className="absolute right-0 -top-1 w-[52px]">
+                    <PlayButton
+                      onClick={share}
+                      text="Share"
+                      className="button-play bg-[#67EB00] text-base px-[10px] tracking-[0.64px]"
+                    />
+                  </div>
                 </div>
               </div>
+
               <Bets bet={bet} setBet={setBet} addBet={addBet} minusBet={minusBet} money={money} />
               <PlayButton className="green-gradient button-play" onClick={startGame} text={'make bet'} />
             </>

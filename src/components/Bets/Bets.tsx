@@ -7,7 +7,7 @@ import { PropsBets } from './Bets.interfaces';
 
 const Bets: FC<PropsBets> = (props) => {
   const { bet, setBet, money, addBet, minusBet } = props;
-  const minimumBet = 1;
+  const minimumBet = 10;
 
   const minBet = () => {
     setBet(minimumBet);
@@ -33,7 +33,12 @@ const Bets: FC<PropsBets> = (props) => {
         <div className="w-full bg-[#3ECEFE] text-white rounded-t-[7px] text-left pl-4 text-lg font-bold">BET</div>
         <div className="flex flex-row gap-9 w-full pl-4 justify-between py-2">
           <div className="flex items-center justify-start">
-            <Money money={bet} classNameText="text-[28px] text-[#7454FD]" moneyHeight="18" moneyWidth="18" />
+            <Money
+              money={Number(bet).toFixed()}
+              classNameText="text-[28px] text-[#7454FD]"
+              moneyHeight="18"
+              moneyWidth="18"
+            />
           </div>
           <div className="flex flex-row gap-3 pr-2 items-center">
             <ButtonBet onClick={addBet} typeButton={TypeButton.Plus} />

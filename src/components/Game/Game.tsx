@@ -1,14 +1,25 @@
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { io, Socket } from 'socket.io-client';
 import CoinRewardIcon from '../../assets/svg/CoinRewardIcon';
 import SuccessIcon from '../../assets/svg/SuccessIcon';
 import { useTelegramGameProxy } from '../../hooks/use-telegram-game-proxy';
 import { Events } from '../../interfaces/events.enum';
 import { SocketEvents } from '../../interfaces/SocketEvent';
+import { RootState } from '../../store';
+import {
+  dispatchClearGame,
+  dispatchEndGame,
+  dispatchEndRound,
+  dispatchLoseRound,
+  dispatchStartRound,
+  dispatchWinRound,
+} from '../../store/slices/globalSlice';
 import Bets from '../Bets';
 import BgButtons from '../BgButtons';
 import BasicLayouts, { GameContext } from '../Layouts/BasicLayout';
+import Modal from '../Modal';
 import Money from '../Money';
 import OnGameReward from '../OnGameReward';
 import PlayButton from '../PlayButton';
@@ -33,8 +44,15 @@ const BetsPage = () => {
   const context = useContext(GameContext);
   const [winAmount, setWinAmount] = useState(0);
   const [winMultiply, setWinMultiply] = useState('0');
+  const dispatch = useDispatch();
+  const { endRound: stateEndRound } = useSelector((state: RootState) => state.global);
 
   const [isBet, setIsBet] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
+
+  const onChangeModal = () => {
+    setShowModal(!showModal);
+  };
 
   const clearGame = () => {
     setStartRound(false);
@@ -102,51 +120,70 @@ const BetsPage = () => {
 
   const startGame = async () => {
     try {
-      if (startRound && isBet) {
-        const data = {
-          userId: '1234567',
-          userGame: 'aviator',
-          userChat: '1234567',
-          hash: '69f45e0b30510528064f2cac2de94c44',
-          roundId,
-          betId,
-        };
-        const tgData = {
-          ...tg.initParams,
-          userGame: 'aviator',
-          roundId,
-          betId,
-        };
-        await axios.post(
-          process.env.REACT_APP_API_URL + '/close',
-          process.env.NODE_ENV === 'development' ? data : tgData,
-        );
-        setCloseBet(true);
-      } else if (!startRound && !isBet) {
-        const data = {
-          amount: bet,
-          userId: '1234567',
-          userGame: 'aviator',
-          userChat: '1234567',
-          hash: '69f45e0b30510528064f2cac2de94c44',
-        };
-        const tgData = {
-          ...tg.initParams,
-          amount: bet,
-          userGame: 'aviator',
-        };
+      if (money < 10) {
+        onChangeModal();
+      } else {
+        if (startRound && isBet) {
+          const data = {
+            userId: '1234567',
+            userGame: 'aviator',
+            userChat: '1234567',
+            hash: '69f45e0b30510528064f2cac2de94c44',
+            roundId,
+            betId,
+          };
+          const tgData = {
+            ...tg.initParams,
+            userGame: 'aviator',
+            roundId,
+            betId,
+          };
+          await axios.post(
+            process.env.REACT_APP_API_URL + '/close',
+            process.env.NODE_ENV === 'development' ? data : tgData,
+          );
+          setCloseBet(true);
+        } else if (!startRound && !isBet) {
+          const data = {
+            amount: bet,
+            userId: '1234567',
+            userGame: 'aviator',
+            userChat: '1234567',
+            hash: '69f45e0b30510528064f2cac2de94c44',
+          };
+          const tgData = {
+            ...tg.initParams,
+            amount: bet,
+            userGame: 'aviator',
+          };
 
-        const res = await axios.post(
-          process.env.REACT_APP_API_URL + '/bet',
-          process.env.NODE_ENV === 'development' ? data : tgData,
-        );
-        setBetId(res.data.betId);
-        setIsBet(true);
+          const res = await axios.post(
+            process.env.REACT_APP_API_URL + '/bet',
+            process.env.NODE_ENV === 'development' ? data : tgData,
+          );
+          setBetId(res.data.betId);
+          setIsBet(true);
+        }
       }
     } catch (error) {
       setIsBet(false);
     }
   };
+
+  useEffect(() => {
+    let timerId: NodeJS.Timeout;
+    if (endRound) {
+      if (winRound) {
+        dispatch(dispatchWinRound());
+      }
+      dispatch(dispatchEndGame());
+      timerId = setTimeout(() => {
+        dispatch(dispatchClearGame());
+      }, 1000);
+    }
+
+    return () => clearTimeout(timerId);
+  }, [endRound]);
 
   useEffect(() => {
     const tgMock = {
@@ -179,25 +216,32 @@ const BetsPage = () => {
             setStartRound(true);
             setMultiply('1.00');
             setRoundId(roundId);
+            dispatch(dispatchStartRound());
             break;
 
           case Events.FINISH_ROUND:
             setEndRound(true);
-            setStartRound(false);
-            setMultiply('1.00');
-            setIsBet(false);
+            dispatch(dispatchEndRound());
+            setTimeout(() => {
+              dispatch(dispatchEndRound());
+              setStartRound(false);
+              setMultiply('1.00');
+              setIsBet(false);
+              setCloseBet(false);
+            }, 2000);
+
             break;
 
           case Events.WIN:
-            const multiplyWin = (amount / bet).toFixed(2);
             setWinRound(true);
             setWinAmount(amount);
-            setWinMultiply(multiplyWin);
+            setWinMultiply(String(multiplier));
 
             break;
 
           case Events.LOSE:
             setLoseRound(true);
+            dispatch(dispatchLoseRound());
 
             break;
 
@@ -220,13 +264,6 @@ const BetsPage = () => {
   return (
     <BasicLayouts>
       <div className="App-header relative z-50">
-        {/* <Logo></Logo> */}
-        {/* <span>Старт раунда {startRound ? 'true' : 'false'}</span>
-        <span>Стоп раунда {endRound ? 'true' : 'false'}</span>
-        <span>Победа раунда {winRound ? 'true' : 'false'}</span>
-        <span>Поражение раунда {loseRound ? 'true' : 'false'}</span>
-        <span>Multiply раунда {multiply}</span> */}
-
         <div className="flex flex-col absolute top-[50px] items-center gap-[85px] justify-center">
           {startRound ? (
             <PlayButton
@@ -245,15 +282,18 @@ const BetsPage = () => {
           )}
           <div
             className={`relative w-fit invisible scale-0 transition-all duration-1000 ease-in-out ${
-              winRound && endRound ? '!visible !scale-150' : ''
+              winRound && endRound && !stateEndRound ? '!visible !scale-150' : ''
             }`}
           >
             <div
               className={`absolute scale-0 transition-all duration-1000 ease-out -top-[45px] ${
-                winRound && endRound ? '!scale-150' : ''
+                winRound && endRound && !stateEndRound ? '!scale-150' : ''
               }  left-[55%] -translate-x-[55%]`}
             >
-              <SuccessIcon width={winRound && endRound ? '75' : '0'} height={winRound && endRound ? '50' : '0'} />
+              <SuccessIcon
+                width={winRound && endRound && !stateEndRound ? '75' : '0'}
+                height={winRound && endRound && !stateEndRound ? '50' : '0'}
+              />
             </div>
             <div className="bg-white flex flex-row rounded-xl p-2 justify-between gap-3">
               <div className="flex flex-col justify-center items-center">
@@ -263,10 +303,10 @@ const BetsPage = () => {
                 </div>
               </div>
               <div className="flex flex-col justify-center items-center">
-                <span className="text-[#60CFFF] text-[10px] whitespace-nowrap">Reward</span>
+                <span className="text-[#60CFFF] text-[10px] whitespace-nowrap tracking-[0.8px]">Reward</span>
                 <div className="bg-[#C2FDFF] text-[12px] font-bold text-center rounded-xl text-[#228AED] flex flex-row gap-1 justify-center items-center min-w-[50px]">
                   <CoinRewardIcon height="7.5" width="10" />
-                  <span>{Math.floor(winAmount)}</span>
+                  <span className="tracking-[1.2px]">{Math.floor(winAmount)}</span>
                 </div>
               </div>
             </div>
@@ -275,31 +315,41 @@ const BetsPage = () => {
         <div className="flex flex-col gap-5 absolute bottom-[50px] items-center justify-center">
           {isBet ? (
             closeBet ? (
-              <BgButtons>
-                <div className="text-xl uppercase font-bold whitespace-nowrap">Wait end round</div>
-              </BgButtons>
+              <>
+                <div className="flex flex-col justify-center items-center gap-4">
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-xl font-bold text-[#DFF9FF] uppercase">lost reward</span>
+                    <Money
+                      money={Math.floor(Number(multiply) * bet)}
+                      classNameText="text-[40px] text-white"
+                      moneyHeight="18"
+                      moneyWidth="18"
+                    />
+                  </div>
+                  <OnGameReward money={winAmount} text={'claim reward'} />
+                </div>
+              </>
             ) : (
-              <OnGameReward money={bet * Number(multiply)} />
+              <OnGameReward money={bet * Number(multiply)} text={'reward'} />
             )
           ) : startRound ? (
             <>
-              <div className="relative bg-[#A77DFE] rounded-2xl w-[255px]">
+              <div className="relative bg-[#A77DFE] rounded-2xl w-[270px]">
                 <Money
-                  classNameButton="!justify-start pl-[22px]"
+                  classNameButton="!justify-start pl-[22px] w-[270px]"
                   money={'Share and get +100'}
-                  classNameText="text-[16px] text-white"
+                  classNameText="text-[14px] text-white"
                   moneyHeight="18"
                   moneyWidth="18"
                 />
-                <div className="absolute right-0 -top-1 w-[52px]">
+                <div className="absolute right-0 -top-1 w-[84px]">
                   <PlayButton
                     onClick={share}
                     text="Share"
-                    className="button-play bg-[#67EB00] text-base px-[10px] tracking-[0.64px]"
+                    className="button-play bg-[#67EB00] text-base !px-[10px] tracking-[0.64px]"
                   />
                 </div>
               </div>
-
               <BgButtons>
                 <div className="text-xl uppercase font-bold whitespace-nowrap">Wait next round</div>
               </BgButtons>
@@ -307,24 +357,24 @@ const BetsPage = () => {
           ) : (
             <>
               <div className="flex flex-col">
-                <span className="text-xl font-bold uppercase">balance</span>
+                <span className="text-xl font-bold uppercase tracking-[0.8px] text-[#DFF9FF]">balance</span>
 
-                <Money money={startRound ? bet : money} classNameText={'text-[43px]'} />
+                <Money money={startRound ? bet : money} classNameText={'text-[43px] tracking-[1.29px]'} />
               </div>
-              <div className="flex w-full">
-                <div className="relative bg-[#A77DFE] rounded-2xl w-[255px]">
+              <div className="flex w-full justify-center">
+                <div className="relative bg-[#A77DFE] rounded-2xl w-full">
                   <Money
-                    classNameButton="!justify-start pl-[22px]"
+                    classNameButton="!justify-start pl-[22px] !w-[270px]"
                     money={'Share and get +100'}
-                    classNameText="text-[16px] text-white"
+                    classNameText="text-[14px] text-white"
                     moneyHeight="18"
                     moneyWidth="18"
                   />
-                  <div className="absolute right-0 -top-1 w-[52px]">
+                  <div className="absolute right-0 -top-1 w-[84px]">
                     <PlayButton
                       onClick={share}
                       text="Share"
-                      className="button-play bg-[#67EB00] text-base px-[10px] tracking-[0.64px]"
+                      className="button-play bg-[#67EB00] text-base !px-[10px] tracking-[0.64px]"
                     />
                   </div>
                 </div>
@@ -352,6 +402,7 @@ const BetsPage = () => {
             </BgButtons>
           ) : null}
         </div>
+        {showModal ? <Modal share={share} onChangeModal={onChangeModal} /> : null}
       </div>
     </BasicLayouts>
   );

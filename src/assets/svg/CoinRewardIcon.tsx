@@ -151,9 +151,9 @@ const CoinRewardIcon = ({ width = '11', height = '8' }: { width?: string; height
           width="8.80322"
           height="7.11983"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"

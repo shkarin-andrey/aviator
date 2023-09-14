@@ -402,7 +402,7 @@ const BetsPage = () => {
             </BgButtons>
           ) : null}
         </div>
-        {showModal ? <Modal share={share} onChangeModal={onChangeModal} /> : null}
+        {showModal ? <Modal share={share} onChangeModal={onChangeModal} money={money} /> : null}
       </div>
     </BasicLayouts>
   );

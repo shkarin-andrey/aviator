@@ -1,10 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { GameContext } from '../Layouts/BasicLayout';
 import { airplane } from './Airplane';
 import { cloud, cloudSmall } from './Cloud';
 import { getAnimateCloud } from './helper';
 
 const CanvasAirPlaneAndCloud = (props: any) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const context = useContext(GameContext);
+  const loseRound = useSelector((state: RootState) => state.global.loseRound);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -91,8 +96,6 @@ const CanvasAirPlaneAndCloud = (props: any) => {
           },
         ],
         startGame: true,
-        airplane: imageAirplane,
-        airplanePos: { x: ctx.canvas.width / 2 - 120, y: ctx.canvas.height / 2 - 52 },
       });
     }
   }, []);

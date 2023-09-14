@@ -30,7 +30,9 @@ const Bets: FC<PropsBets> = (props) => {
   return (
     <div className="py-[10px] px-[17px] bg-[#DFF9FF] rounded-[21px] shadow">
       <div className="flex flex-col bg-white rounded-[7px] shadow-bets mb-3">
-        <div className="w-full bg-[#3ECEFE] text-white rounded-t-[7px] text-left pl-4 text-lg font-bold">BET</div>
+        <div className="w-full bg-[#3ECEFE] text-white rounded-t-[7px] text-left pl-4 text-lg font-bold tracking-[0.64px]">
+          BET
+        </div>
         <div className="flex flex-row gap-9 w-full pl-4 justify-between py-2">
           <div className="flex items-center justify-start">
             <Money
@@ -46,11 +48,11 @@ const Bets: FC<PropsBets> = (props) => {
           </div>
         </div>
       </div>
-      <div className="flex flex-row gap-1">
-        <ButtonScaleBet className="bg-[#4CDAFE] button-min" onClick={minBet} text={'Min'} />
-        <ButtonScaleBet className="bg-[#FC8AFF] button-x2" onClick={x2Bet} text={'X2'} />
-        <ButtonScaleBet className="bg-[#C286FF] button-div2" onClick={divideBet} text={'/2'} />
-        <ButtonScaleBet className="bg-[#FFDD17] button-allin" onClick={allInBet} text={'All in'} />
+      <div className="flex flex-row gap-1 justify-center w-full">
+        <a href="https://t.me/the_aviator_game_bot?game=aviator" target={'_blank'}>
+          <ButtonScaleBet className="bg-[#4CDAFE] button-deposit w-[95px]" onClick={minBet} text={'Deposit'} />
+        </a>
+        <ButtonScaleBet className="bg-[#FFDD17] button-allin w-[95px]" onClick={allInBet} text={'All in'} />
       </div>
     </div>
   );

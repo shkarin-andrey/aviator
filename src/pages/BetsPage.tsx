@@ -1,22 +1,18 @@
-import { useContext, useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import Game from '../components/Game';
-import BasicLayouts, { GameContext } from '../components/Layouts/BasicLayout';
+import BasicLayouts from '../components/Layouts/BasicLayout';
 import Logo from '../components/Logo';
 import PlayButton from '../components/PlayButton';
-
-const Check = () => {
-  const context = useContext(GameContext);
-  useEffect(() => {
-    context.onStartScreen();
-  }, []);
-  return <></>;
-};
+import { dispatchStartGame } from '../store/slices/globalSlice';
 
 const BetsPage = () => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const dispatch = useDispatch();
 
   const onClick = () => {
     setIsPlaying(true);
+    dispatch(dispatchStartGame());
   };
 
   return (
@@ -24,7 +20,6 @@ const BetsPage = () => {
       <div className="App-header relative z-50 ">
         {isPlaying ? (
           <>
-            <Check></Check>
             <Game />
           </>
         ) : (

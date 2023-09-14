@@ -7,7 +7,7 @@ const ButtonScaleBet: FC<PropsButtonScaleBet> = (props) => {
   return (
     <div>
       <button
-        className={`${className} button-scale py-[6px] px-[14px] text-[18px] font-bold whitespace-nowrap`}
+        className={`${className} button-scale py-[6px] px-[14px] text-[16px] font-bold whitespace-nowrap`}
         onClick={onClick}
       >
         {text}

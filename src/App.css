@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'KarantinaRegular';
+  src: url('./assets/fonts/Karantina-Regular.ttf') format('truetype');
+  font-weight: normal;
+}
+
+/* span,
+p,
+button {
+  font-family: 'KarantinaRegular', arial;
+}
+
+button {
+  letter-spacing: 1.12px;
+} */
+
 .App {
   text-align: center;
   font-size: 1rem;
@@ -48,6 +64,9 @@
 }
 .button-allin {
   box-shadow: inset 0px -4px 0px 0px #ffb213, 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
+}
+.button-deposit {
+  box-shadow: inset 0px -4px 0px 0px #09b9ff, 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
 }
 
 .green-gradient {
@@ -109,7 +128,7 @@
 
 .progress-bar-value {
   background-color: red;
-  animation: animation1 35s, animation2 10s;
+  animation: animation1 15s, animation2 5s;
   animation-iteration-count: 1;
   height: 100%;
   width: 0px;
@@ -131,4 +150,9 @@
   100%% {
     width: 130px;
   }
+}
+
+.bg-modal {
+  background: rgba(75, 48, 155, 0.5);
+  backdrop-filter: blur(2px);
 }

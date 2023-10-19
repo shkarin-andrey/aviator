@@ -6,7 +6,7 @@ import { getAnimateAirPlane } from './helper';
 
 const CanvasAirPlane = (props: any) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const { loseRound, winRound, startRound, endGame, endRound } = useSelector((state: RootState) => state.global);
+  const { resetFlight, startRound, endGame, endRound } = useSelector((state: RootState) => state.global);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -20,14 +20,16 @@ const CanvasAirPlane = (props: any) => {
 
       getAnimateAirPlane({
         canvas: canvasRef,
-        endGame,
+        resetFlight,
         startRound,
-        endRound,
         airplane: imageAirplane,
-        airplanePos: { x: ctx.canvas.width / 2 - 80, y: ctx.canvas.height / 2 - 52 },
+        airplanePos: {
+          x: resetFlight ? ctx.canvas.width / 2 - 80 : -20,
+          y: resetFlight ? ctx.canvas.height / 2 - 52 : 0,
+        },
       });
     }
-  }, [endGame, endRound]);
+  }, [resetFlight]);
 
   return <canvas width={window.innerWidth} height={300} ref={canvasRef} {...props} />;
 };

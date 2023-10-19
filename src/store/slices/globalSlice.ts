@@ -7,6 +7,7 @@ export interface GlobalState {
   winRound: boolean;
   endGame: boolean;
   endRound: boolean;
+  resetFlight: boolean;
 }
 
 const initialState: GlobalState = {
@@ -16,6 +17,7 @@ const initialState: GlobalState = {
   winRound: false,
   endGame: false,
   endRound: false,
+  resetFlight: false,
 };
 
 export const globalSlice = createSlice({
@@ -46,6 +48,9 @@ export const globalSlice = createSlice({
     dispatchEndRound: (state) => {
       state.endRound = !state.endRound;
     },
+    dispatchResetFlight: (state) => {
+      state.resetFlight = !state.resetFlight;
+    },
   },
 });
 
@@ -58,6 +63,7 @@ export const {
   dispatchWinRound,
   dispatchClearGame,
   dispatchEndRound,
+  dispatchResetFlight,
 } = globalSlice.actions;
 
 export default globalSlice.reducer;

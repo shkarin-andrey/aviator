@@ -16,7 +16,7 @@ const Modal: FC<ModalProps> = (props) => {
     <div className="fixed z-[9999] top-0 bottom-0 left-0 right-0 bg-modal w-full h-full">
       <div className="absolute bottom-[60px] w-full flex items-center justify-center flex-col">
         <div className="h-[240px] w-[190px]">
-          <div className={`absolute -top-[100px] left-[52%] -translate-x-[52%]`}>
+          <div className={`absolute -top-[100px] left-[50%] -translate-x-[49%]`}>
             <GetRewardIcon />
           </div>
           <div className="bg-white flex flex-col rounded-xl p-2 gap-3 h-[240px] w-[190px] px-[26px]">

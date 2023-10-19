@@ -25,6 +25,7 @@ interface DrawProps {
   startRound?: boolean;
   airplane?: HTMLImageElement;
   airplanePos?: StartPosition;
+  resetFlight?: boolean;
 }
 
 export const getAnimateCloud = (props: DrawProps) => {
@@ -74,8 +75,9 @@ export const getAnimateCloud = (props: DrawProps) => {
 };
 
 export const getAnimateAirPlane = (props: DrawProps) => {
-  const { canvas, airplane, airplanePos, endGame, endRound } = props;
+  const { canvas, airplane, airplanePos, endGame, endRound, resetFlight } = props;
   let top = true;
+  let right = false;
 
   (function gameLoop() {
     const canvasCurrent = canvas.current;
@@ -87,29 +89,41 @@ export const getAnimateAirPlane = (props: DrawProps) => {
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
       ctx.drawImage(airplane, airplanePos.x, airplanePos.y);
+      // console.log(airplanePos.x);
 
-      if (endGame || endRound) {
-        if (airplanePos.x - 50 < ctx.canvas.width) {
-          airplanePos.x += 5;
-          airplanePos.y -= 2;
-        }
-        // else {
-        //   airplanePos.x = ctx.canvas.width / 2 - 120;
-        //   airplanePos.y = 100;
-        // }
+      if (
+        airplanePos.x < ctx.canvas.width / 2 - 80 &&
+        airplanePos.y < ctx.canvas.height / 2 - 52 &&
+        !resetFlight &&
+        !right
+      ) {
+        airplanePos.x += 5;
+        airplanePos.y += 2;
+        right = false;
       } else {
-        console.log('here');
-
-        if (airplanePos.y > 150 && top) {
-          airplanePos.y -= 0.3;
-          top = false;
-        } else if (airplanePos.y < 50 && !top) {
-          airplanePos.y += 0.3;
-          top = true;
-        } else if (top) {
-          airplanePos.y += 0.3;
-        } else if (!top) {
-          airplanePos.y -= 0.3;
+        if (resetFlight && !right) {
+          if (airplanePos.x - 50 < ctx.canvas.width && !right) {
+            airplanePos.x += 5;
+            airplanePos.y -= 2;
+          } else if (!right) {
+            setTimeout(() => {
+              right = true;
+              airplanePos.x = -20;
+              airplanePos.y = 0;
+            }, 2000);
+          }
+        } else {
+          if (airplanePos.y > 150 && top) {
+            airplanePos.y -= 0.3;
+            top = false;
+          } else if (airplanePos.y < 50 && !top) {
+            airplanePos.y += 0.3;
+            top = true;
+          } else if (top) {
+            airplanePos.y += 0.3;
+          } else if (!top) {
+            airplanePos.y -= 0.3;
+          }
         }
       }
 

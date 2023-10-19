@@ -13,6 +13,7 @@ import {
   dispatchEndGame,
   dispatchEndRound,
   dispatchLoseRound,
+  dispatchResetFlight,
   dispatchStartRound,
   dispatchWinRound,
 } from '../../store/slices/globalSlice';
@@ -222,12 +223,16 @@ const BetsPage = () => {
           case Events.FINISH_ROUND:
             setEndRound(true);
             dispatch(dispatchEndRound());
+            dispatch(dispatchResetFlight());
+
             setTimeout(() => {
               dispatch(dispatchEndRound());
+              dispatch(dispatchResetFlight());
               setStartRound(false);
               setMultiply('1.00');
               setIsBet(false);
               setCloseBet(false);
+              setBet(10);
             }, 2000);
 
             break;

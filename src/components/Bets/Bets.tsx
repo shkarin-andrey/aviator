@@ -7,21 +7,21 @@ import { PropsBets } from './Bets.interfaces';
 
 const Bets: FC<PropsBets> = (props) => {
   const { bet, setBet, money, addBet, minusBet } = props;
-  const minimumBet = 10;
+  // const minimumBet = 10;
 
   const minBet = () => {
-    setBet(minimumBet);
+    //setBet(minimumBet);
   };
 
-  const x2Bet = () => {
-    setBet(bet * 2);
-  };
-
-  const divideBet = () => {
-    if (bet > minimumBet) {
-      setBet(bet / 2);
-    }
-  };
+  // const x2Bet = () => {
+  //   setBet(bet * 2);
+  // };
+  //
+  // const divideBet = () => {
+  //   if (bet > minimumBet) {
+  //     setBet(bet / 2);
+  //   }
+  // };
 
   const allInBet = () => {
     setBet(money);

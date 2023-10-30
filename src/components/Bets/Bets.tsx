@@ -49,7 +49,7 @@ const Bets: FC<PropsBets> = (props) => {
         </div>
       </div>
       <div className="flex flex-row gap-1 justify-center w-full">
-        <a href={process.env.REACT_APP_TG_SHARE || ''} target={'_blank'}>
+        <a href={process.env.REACT_APP_TG_SHARE || ''}>
           <ButtonScaleBet className="bg-[#4CDAFE] button-deposit w-[95px]" onClick={minBet} text={'Deposit'} />
         </a>
         <ButtonScaleBet className="bg-[#FFDD17] button-allin w-[95px]" onClick={allInBet} text={'All in'} />

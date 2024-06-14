@@ -1,13 +1,9 @@
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { setToggleRound } from '../../store/slices/globalSlice';
 import TopBar from '../TopBar';
-
-interface ILayout {
-  children: ReactNode;
-  isPlaying: boolean;
-}
+import { ILayout } from './Layout.interface';
 
 const Layout: FC<ILayout> = ({ children, isPlaying }) => {
   const [time, setTime] = useState(15);

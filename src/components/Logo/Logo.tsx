@@ -1,6 +1,5 @@
 import { FC } from 'react';
-
-type TLogo = React.HTMLAttributes<HTMLHeadingElement>;
+import { TLogo } from './Logo.interface';
 
 const Logo: FC<TLogo> = ({ children }) => {
   return (

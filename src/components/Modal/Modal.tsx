@@ -6,6 +6,7 @@ import './modalStyles.css';
 
 const Modal: FC<IModal> = ({ children, isOpen, handleClose, title }) => {
   const nodeRef = useRef(null);
+
   useEffect(() => {
     const closeOnEscapeKey = (e: KeyboardEvent) => (e.key === 'Escape' ? handleClose() : null);
     document.body.addEventListener('keydown', closeOnEscapeKey);

@@ -1,10 +1,7 @@
 import { FC } from 'react';
 import Button from '../Button';
 import Logo from '../Logo';
-
-interface IStartView {
-  onPlay: () => void;
-}
+import { IStartView } from './StartView.interface';
 
 const StartView: FC<IStartView> = ({ onPlay }) => {
   return (

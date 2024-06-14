@@ -1,10 +1,6 @@
 import { FC } from 'react';
 import { ReactComponent as SuccessIcon } from '../../assets/svg/success.svg';
-
-interface ISuccess {
-  winCount: string;
-  reward: string;
-}
+import { ISuccess } from './Success.interface';
 
 const Success: FC<ISuccess> = ({ winCount, reward }) => {
   return (

@@ -5,10 +5,7 @@ import Modal from '../Modal';
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-
-interface IModalWithdraw {
-  balance: number;
-}
+import { IModalWithdraw } from './ModalWithdraw.interface';
 
 const ModalWithdraw: FC<IModalWithdraw> = ({ balance }) => {
   const [isOpen, setIsOpen] = useState(false);

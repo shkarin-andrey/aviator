@@ -1,11 +1,5 @@
 import { FC } from 'react';
-
-interface IBetWrapper {
-  children: React.ReactNode;
-  text?: string;
-  title?: string;
-  color?: string;
-}
+import { IBetWrapper } from './BetWrapper.interface';
 
 const BetWrapper: FC<IBetWrapper> = ({ children, text, title = 'bet', color = '#5754FD' }) => {
   return (

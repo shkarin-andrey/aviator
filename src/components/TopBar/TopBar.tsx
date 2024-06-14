@@ -1,13 +1,9 @@
 import { FC } from 'react';
 import { typeButtonOfNumber } from '../../utils/typeButtonOfNumber';
 import Button from '../Button';
+import { ITopBar } from './TopBar.interface';
 
 const data = [1, 1.5, 3, 4, 6, 10, 15, 25, 30, 35, 40, 45, 50, 55];
-
-interface ITopBar extends React.HTMLAttributes<HTMLDivElement> {
-  isStart: boolean;
-  time: number;
-}
 
 const TopBar: FC<ITopBar> = ({ isStart, time, className = '', ...props }) => {
   return (

@@ -1,4 +1,4 @@
-import { TypeButton } from '../components/Button/Button';
+import { TypeButton } from '../components/Button/Button.interface';
 
 export const typeButtonOfNumber = (number: number): TypeButton => {
   if (number < 3) {

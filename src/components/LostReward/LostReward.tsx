@@ -1,8 +1,5 @@
 import { FC } from 'react';
-
-interface ILostReward {
-  count: number;
-}
+import { ILostReward } from './LostReward.interface';
 
 const LostReward: FC<ILostReward> = ({ count }) => {
   return (

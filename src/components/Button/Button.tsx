@@ -1,19 +1,6 @@
-import React, { FC, useMemo } from 'react';
-
-export type TypeButton = 'purple' | 'blue' | 'dark-blue' | 'green' | 'orange' | 'yellow' | 'red' | 'dark-red';
-type TypeSize = 's' | 'l';
-
-interface IButton extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> {
-  htmlType?: React.ButtonHTMLAttributes<HTMLButtonElement>['type'];
-  type?: TypeButton;
-  isFill?: boolean;
-  size?: TypeSize;
-}
-
-const classNameAfter =
-  "after:content-[''] after:w-[calc(100%+5px)] after:-right-[2px] after:rounded-full after:absolute after:h-full after:block";
-
-const classNameBeforeAndAfter = `before:content-[''] before:skew-x-[40deg] before:w-[70%] before:-left-[2px] before:z-[1] before:rounded-l-full before:absolute before:h-full before:block ${classNameAfter}`;
+import { FC, useMemo } from 'react';
+import { classNameAfter, classNameBeforeAndAfter } from './Button.config';
+import { IButton } from './Button.interface';
 
 const Button: FC<IButton> = ({
   children,

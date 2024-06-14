@@ -1,9 +1,6 @@
 import { FC } from 'react';
 import ModalWithdraw from '../ModalWithdraw';
-
-interface IBalance {
-  balance: number;
-}
+import { IBalance } from './Balance.interface';
 
 const Balance: FC<IBalance> = ({ balance }) => {
   return (

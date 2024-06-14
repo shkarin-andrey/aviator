@@ -6,7 +6,7 @@ export interface GlobalState {
 }
 
 const initialState: GlobalState = {
-  startRound: false,
+  startRound: true,
   rate: null,
 };
 

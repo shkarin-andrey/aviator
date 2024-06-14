@@ -9,16 +9,25 @@ import { ReactComponent as AirPlainIcon } from '../../assets/svg/air-plane.svg';
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { setRate, setToggleRound } from '../../store/slices/globalSlice';
 
-const PlayView: FC = () => {
-  const [count, setCount] = useState(1);
+import Success from '../Success';
 
+const PlayView: FC = () => {
   const dispatch = useDispatch();
   const startRound = useAppSelector((state) => state.global.startRound);
   const rate = useAppSelector((state) => state.global.rate);
 
+  const [count, setCount] = useState(1);
+  const [cash, setCash] = useState<number | null>(null);
+  const [isWin, setIsWin] = useState<boolean | null>(null);
+  const [endPlay, setEndPlay] = useState<boolean>(false);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+
+  const rateCount = rate ? rate * count : 0;
+
   const valueIsSelected = rate ? 'Bet is selected' : 'Choose a bet to play';
 
-  const classNemeStart = startRound ? 'scale-[1.7] -rotate-[13deg] top-[43%]' : 'scale-100 top-[48%]';
+  const classNemeStart = startRound && !showSuccess ? 'scale-[1.7] -rotate-[13deg]' : 'scale-100';
+  const classNameSuccess = showSuccess ? 'top-[50%]' : 'top-[30%]';
 
   useEffect(() => {
     if (!startRound) return;
@@ -28,68 +37,112 @@ const PlayView: FC = () => {
     const interval = setInterval(() => {
       setCount((prev) => {
         if (prev >= generateCount) {
-          dispatch(setToggleRound(false));
-          dispatch(setRate(null));
+          setEndPlay(true);
+
+          setTimeout(() => {
+            dispatch(setToggleRound(false));
+            dispatch(setRate(null));
+            setCount(1);
+            setCash(null);
+            setIsWin(null);
+            setEndPlay(false);
+          }, 4_000);
+
+          clearInterval(interval);
+
           return prev;
         }
 
         return prev + 0.1;
       });
-    }, 100);
-
-    if (count >= generateCount) {
-      return () => clearInterval(interval);
-    }
+    }, 200);
 
     return () => clearInterval(interval);
   }, [startRound]);
 
+  useEffect(() => {
+    if (isWin && endPlay) {
+      setShowSuccess(true);
+
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 4_000);
+    }
+  }, [isWin, endPlay]);
+
   const handleStart = (number: number) => {
     dispatch(setRate(number));
-    // dispatch(setToggleRound(true));
   };
 
-  console.log((startRound && !rate) || !rate, startRound && !rate, !rate);
+  const handleCashOut = () => {
+    setIsWin(true);
+    setCash(rateCount);
+  };
 
   return (
     <>
-      <div className="absolute left-1/2 -translate-x-1/2 top-[30%] flex flex-col gap-5">
-        {startRound && (
-          <Button type={typeButtonOfNumber(count)} className="lowercase">
-            {count.toFixed(1)}x
-          </Button>
+      {showSuccess && (
+        <div className="absolute left-1/2 -translate-x-1/2 top-[30%] flex flex-col gap-5">
+          <Success winCount={count.toFixed(1)} reward={cash?.toFixed(1) || ''} />
+        </div>
+      )}
+      <div className={`absolute left-1/2 -translate-x-1/2 flex flex-col gap-5 transition-all ${classNameSuccess}`}>
+        {startRound && !showSuccess && (
+          <>
+            {endPlay && (
+              <div className="text-white font-bold text-[20px] translate-y-[18px] leading-none uppercase tracking-[2px] text-center">
+                FLEW AWAY!
+              </div>
+            )}
+            <Button type={typeButtonOfNumber(count)} className="lowercase">
+              {count.toFixed(1)}x
+            </Button>
+          </>
         )}
         <AirPlainIcon className={`transition-all duration-200 ${classNemeStart}`} />
       </div>
-      {/* {startRound && (
+      {startRound && rate && isWin !== false && !endPlay && (
         <div className="absolute left-1/2 top-[70%] -translate-x-1/2 w-[150px] flex flex-col gap-4 justify-center">
-          <div>
-            <div className="text-[#DFF9FF] font-bold text-[20px] leading-none uppercase tracking-[1.2px] text-center">
-              lost reward
+          {cash && (
+            <div>
+              <div className="text-[#DFF9FF] font-bold text-[20px] leading-none uppercase tracking-[1.2px] text-center">
+                lost reward
+              </div>
+              <div className="text-white font-bold text-[44px] leading-none uppercase tracking-[0.8px] text-center">
+                ${(rateCount - cash).toFixed(1)}
+              </div>
             </div>
-            <div className="text-white font-bold text-[44px] leading-none uppercase tracking-[0.8px] text-center">
-              $2
+          )}
+          <BetWrapper color="#11BBE1" title={cash ? 'claim Reward' : 'Reward'}>
+            <div className="text-center text-[#7454FD] text-[40px] font-bold leading-none tracking-[1.2px]">
+              ${(cash || rateCount).toFixed(1)}
             </div>
-          </div>
-          <BetWrapper color="#11BBE1" title="Reward">
-            <div className="text-center text-[#7454FD] text-[40px] font-bold leading-none tracking-[1.2px]">$5</div>
           </BetWrapper>
-          <Button type="orange" className="px-[15px]">
-            Cash out
-          </Button>
+          {(!cash || !isWin) && !endPlay && (
+            <Button onClick={handleCashOut} type="orange" className="px-[15px]">
+              Cash out
+            </Button>
+          )}
         </div>
-      )} */}
+      )}
 
       <div className="absolute left-1/2 -translate-x-1/2 bottom-[10%] w-[260px] flex flex-col gap-3">
-        {(!startRound || (startRound && !rate)) && <Balance balance={500} />}
-        {(!startRound || (startRound && !rate)) && (
+        {endPlay && !isWin && rate && (
+          <div className="tracking-[0.8px] uppercase text-[20px] text-white font-bold text-center">
+            OPS, not now
+            <br />
+            Try again!
+          </div>
+        )}
+        {(!startRound || (startRound && !rate) || (endPlay && isWin)) && <Balance balance={500} />}
+        {(!startRound || (startRound && !rate) || (endPlay && isWin)) && (
           <BetWrapper text={!startRound ? valueIsSelected : ''}>
             {startRound && !rate && (
               <div className="text-[#5754FD] text-[20px] font-bold text-center tracking-[0.8px] px-5 uppercase">
                 Wait until the end of the round to make a bet
               </div>
             )}
-            {!startRound && (
+            {(!startRound || (endPlay && isWin)) && (
               <div className="flex items-center justify-between gap-2.5">
                 <Button
                   onClick={() => handleStart(1)}

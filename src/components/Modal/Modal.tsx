@@ -18,7 +18,7 @@ const Modal: FC<IModal> = ({ children, isOpen, handleClose, title }) => {
     <CSSTransition in={isOpen} timeout={{ enter: 0, exit: 300 }} unmountOnExit classNames="modal" nodeRef={nodeRef}>
       <ReactPortal wrapperId="modal" ref={nodeRef}>
         <div className="modal-content !font-mono">
-          <h2 className="text-[#5754FD] text-[24px] font-medium text-center">{title}</h2>
+          <h2 className="text-[#5754FD] text-[24px] font-medium text-center capitalize">{title}</h2>
           {children}
         </div>
       </ReactPortal>

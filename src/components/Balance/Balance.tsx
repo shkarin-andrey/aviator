@@ -8,7 +8,7 @@ interface IBalance {
 const Balance: FC<IBalance> = ({ balance }) => {
   return (
     <div
-      className="px-3.5 py-2 flex items-center justify-between bg-[#5754FD] rounded-full"
+      className="px-3.5 py-2 flex items-center tracking-[0.8px] justify-between bg-[#5754FD] rounded-full"
       style={{
         boxShadow: '0px 4.438px 0px 0px rgba(0, 0, 0, 0.15)',
       }}

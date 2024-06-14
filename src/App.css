@@ -22,6 +22,50 @@ html {
   animation: scroll linear 30s infinite;
 }
 
+.air-animate {
+  animation: air linear 4s;
+}
+
+.air-animate-infinite {
+  animation: airInfinite linear 4s infinite;
+}
+
+@keyframes airInfinite {
+  0% {
+    transform: translate(-50%, 0);
+  }
+  25% {
+    transform: translate(-50%, 30px);
+  }
+  55% {
+    transform: translate(-50%, 0);
+  }
+  75% {
+    transform: translate(-50%, -30px);
+  }
+  100% {
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes air {
+  0% {
+    transform: translate(0, 0) rotate(-13deg) scale(1.7);
+  }
+  50% {
+    transform: translate(1000px, -1200px) rotate(-13deg) scale(1.7);
+  }
+  55% {
+    transform: translate(-1000px, -1200px) rotate(0);
+  }
+  80% {
+    transform: translate(-1000px, 0) rotate(0);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+}
+
 @keyframes scroll {
   from {
     background-position: 100vw 0;

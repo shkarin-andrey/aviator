@@ -33,6 +33,9 @@ const PlayView: FC = () => {
   const classNemeStart = startRound && !showSuccess ? 'scale-[1.7] -rotate-[13deg]' : 'scale-100';
   const classNameSuccess = showSuccess ? 'top-[50%]' : 'top-[30%]';
 
+  const classNameEndRound = endPlay ? 'air-animate' : '';
+  const classNameAnimateAir = endPlay ? '' : 'air-animate-infinite';
+
   useEffect(() => {
     if (!startRound) return;
 
@@ -86,7 +89,9 @@ const PlayView: FC = () => {
           <Success winCount={count.toFixed(1)} reward={cash?.toFixed(1) || ''} />
         </div>
       )}
-      <div className={`absolute left-1/2 -translate-x-1/2 flex flex-col gap-5 transition-all ${classNameSuccess}`}>
+      <div
+        className={`absolute left-1/2 -translate-x-1/2 flex flex-col gap-5 transition-all ${classNameSuccess} ${classNameAnimateAir}`}
+      >
         {startRound && !showSuccess && (
           <>
             {endPlay && (
@@ -99,7 +104,7 @@ const PlayView: FC = () => {
             </Button>
           </>
         )}
-        <AirPlainIcon className={`transition-all duration-200 ${classNemeStart}`} />
+        <AirPlainIcon className={`transition-all duration-200 ${classNemeStart} ${classNameEndRound}`} />
       </div>
       {startRound && rate && isWin !== false && !endPlay && (
         <div className="absolute left-1/2 top-[70%] -translate-x-1/2 w-[150px] flex flex-col gap-4 justify-center">

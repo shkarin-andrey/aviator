@@ -1,15 +1,19 @@
 import { FC, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { useAppSelector } from '../../hooks/useAppSelector';
 import { typeButtonOfNumber } from '../../utils/typeButtonOfNumber';
+
 import Balance from '../Balance';
 import BetWrapper from '../BetWrapper';
 import Button from '../Button';
-
-import { useDispatch } from 'react-redux';
-import { ReactComponent as AirPlainIcon } from '../../assets/svg/air-plane.svg';
-import { useAppSelector } from '../../hooks/useAppSelector';
-import { setRate, setToggleRound } from '../../store/slices/globalSlice';
-
+import Fail from '../Fail';
+import LostReward from '../LostReward';
+import RateBtnList from '../RateBtnList';
 import Success from '../Success';
+
+import { ReactComponent as AirPlainIcon } from '../../assets/svg/air-plane.svg';
+import { setRate, setToggleRound } from '../../store/slices/globalSlice';
 
 const PlayView: FC = () => {
   const dispatch = useDispatch();
@@ -70,10 +74,6 @@ const PlayView: FC = () => {
     }
   }, [isWin, endPlay]);
 
-  const handleStart = (number: number) => {
-    dispatch(setRate(number));
-  };
-
   const handleCashOut = () => {
     setIsWin(true);
     setCash(rateCount);
@@ -103,16 +103,7 @@ const PlayView: FC = () => {
       </div>
       {startRound && rate && isWin !== false && !endPlay && (
         <div className="absolute left-1/2 top-[70%] -translate-x-1/2 w-[150px] flex flex-col gap-4 justify-center">
-          {cash && (
-            <div>
-              <div className="text-[#DFF9FF] font-bold text-[20px] leading-none uppercase tracking-[1.2px] text-center">
-                lost reward
-              </div>
-              <div className="text-white font-bold text-[44px] leading-none uppercase tracking-[0.8px] text-center">
-                ${(rateCount - cash).toFixed(1)}
-              </div>
-            </div>
-          )}
+          {cash && <LostReward count={rateCount - cash} />}
           <BetWrapper color="#11BBE1" title={cash ? 'claim Reward' : 'Reward'}>
             <div className="text-center text-[#7454FD] text-[40px] font-bold leading-none tracking-[1.2px]">
               ${(cash || rateCount).toFixed(1)}
@@ -127,13 +118,7 @@ const PlayView: FC = () => {
       )}
 
       <div className="absolute left-1/2 -translate-x-1/2 bottom-[10%] w-[260px] flex flex-col gap-3">
-        {endPlay && !isWin && rate && (
-          <div className="tracking-[0.8px] uppercase text-[20px] text-white font-bold text-center">
-            OPS, not now
-            <br />
-            Try again!
-          </div>
-        )}
+        {endPlay && !isWin && rate && <Fail />}
         {(!startRound || (startRound && !rate) || (endPlay && isWin)) && <Balance balance={500} />}
         {(!startRound || (startRound && !rate) || (endPlay && isWin)) && (
           <BetWrapper text={!startRound ? valueIsSelected : ''}>
@@ -142,37 +127,7 @@ const PlayView: FC = () => {
                 Wait until the end of the round to make a bet
               </div>
             )}
-            {(!startRound || (endPlay && isWin)) && (
-              <div className="flex items-center justify-between gap-2.5">
-                <Button
-                  onClick={() => handleStart(1)}
-                  isFill
-                  type={rate === 1 ? 'purple' : 'blue'}
-                  disabled={!!rate && rate !== 1}
-                  className="!px-0 w-full rounded-[14px] after:rounded-[14px]"
-                >
-                  $1
-                </Button>
-                <Button
-                  onClick={() => handleStart(2)}
-                  isFill
-                  type={rate === 2 ? 'purple' : 'blue'}
-                  disabled={!!rate && rate !== 2}
-                  className="!px-0 w-full rounded-[14px] after:rounded-[14px]"
-                >
-                  $2
-                </Button>
-                <Button
-                  onClick={() => handleStart(5)}
-                  isFill
-                  type={rate === 5 ? 'purple' : 'blue'}
-                  disabled={!!rate && rate !== 5}
-                  className="!px-0 w-full rounded-[14px] after:rounded-[14px]"
-                >
-                  $5
-                </Button>
-              </div>
-            )}
+            {(!startRound || (endPlay && isWin)) && <RateBtnList />}
           </BetWrapper>
         )}
       </div>

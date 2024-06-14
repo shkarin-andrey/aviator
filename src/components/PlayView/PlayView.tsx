@@ -32,7 +32,7 @@ const PlayView: FC = () => {
   useEffect(() => {
     if (!startRound) return;
 
-    const generateCount = Math.random() * 3 + 1;
+    const generateCount = Math.random() * 30 + 1;
 
     const interval = setInterval(() => {
       setCount((prev) => {
@@ -55,7 +55,7 @@ const PlayView: FC = () => {
 
         return prev + 0.1;
       });
-    }, 200);
+    }, 100);
 
     return () => clearInterval(interval);
   }, [startRound]);

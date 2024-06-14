@@ -1,46 +1,28 @@
-import { FC } from 'react';
-import CoinRewardIcon from '../../assets/svg/CoinRewardIcon';
-import GetRewardIcon from '../../assets/svg/GetRewardIcon';
-import PlayButton from '../PlayButton';
-import { ModalProps } from './Modal.interfaces';
+import { FC, useEffect, useRef } from 'react';
+import { CSSTransition } from 'react-transition-group';
+import ReactPortal from '../ReactPortal';
+import { IModal } from './Modal.interface';
+import './modalStyles.css';
 
-const Modal: FC<ModalProps> = (props) => {
-  const { share, onChangeModal, money = 0 } = props;
-
-  const handleShare = () => {
-    share();
-    onChangeModal();
-  };
+const Modal: FC<IModal> = ({ children, isOpen, handleClose, title }) => {
+  const nodeRef = useRef(null);
+  useEffect(() => {
+    const closeOnEscapeKey = (e: KeyboardEvent) => (e.key === 'Escape' ? handleClose() : null);
+    document.body.addEventListener('keydown', closeOnEscapeKey);
+    return () => {
+      document.body.removeEventListener('keydown', closeOnEscapeKey);
+    };
+  }, [handleClose]);
 
   return (
-    <div className="fixed z-[9999] top-0 bottom-0 left-0 right-0 bg-modal w-full h-full">
-      <div className="absolute bottom-[60px] w-full flex items-center justify-center flex-col">
-        <div className="h-[240px] w-[190px]">
-          <div className={`absolute -top-[100px] left-[50%] -translate-x-[49%]`}>
-            <GetRewardIcon />
-          </div>
-          <div className="bg-white flex flex-col rounded-xl p-2 gap-3 h-[240px] w-[190px] px-[26px]">
-            <p className="mt-[40px] mb-1 text-[#F52841] text-xl font-bold">Balance = {money}</p>
-            <p className="mb-1 text-lg font-extrabold text-[#60CFFF] -tracking-[0.6px]">
-              Send this game in chat and get
-            </p>
-            <div className="flex flex-row w-full items-center justify-center">
-              <CoinRewardIcon height="38" width="54" />
-              <span className="text-[#60CFFF] text-4xl font-bold">100</span>
-            </div>
-          </div>
+    <CSSTransition in={isOpen} timeout={{ enter: 0, exit: 300 }} unmountOnExit classNames="modal" nodeRef={nodeRef}>
+      <ReactPortal wrapperId="modal" ref={nodeRef}>
+        <div className="modal-content !font-mono">
+          <h2 className="text-[#5754FD] text-[24px] font-medium text-center">{title}</h2>
+          {children}
         </div>
-        <PlayButton
-          onClick={handleShare}
-          text="Share"
-          className="button-play bg-[#67EB00] text-2xl !px-[30px] tracking-[0.64px] mt-4 mb-8"
-        />
-        <p className="uppercase text-[#DFDFDF] text-xl font-bold" onClick={onChangeModal}>
-          not now...
-        </p>
-      </div>
-    </div>
+      </ReactPortal>
+    </CSSTransition>
   );
 };
-
 export default Modal;

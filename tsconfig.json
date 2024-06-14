@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -19,15 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules/telegram-webapps-types"
-    ]
+    "typeRoots": ["./node_modules/@types"]
   },
-  "include": [
-    "src",
-    "src/custom.d.ts",
-    "./tailwind.config.js",
-    "./postcss.config.js"
-  ]
+  "include": ["src", "src/custom.d.ts", "./tailwind.config.js", "./postcss.config.js"]
 }

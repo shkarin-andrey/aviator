@@ -1,0 +1,35 @@
+#modal {
+  position: fixed;
+  inset: 0; /* inset sets all 4 values (top right bottom left) much like how we set padding, margin etc., */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+  z-index: 999;
+  opacity: 1;
+  transform: scale(1);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5.5px);
+}
+
+.modal-enter-done {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+.modal-exit {
+  opacity: 0;
+  transform: scale(0.4);
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  padding: 22px 24px 16px;
+  border-radius: 24px;
+  background: #fff;
+}

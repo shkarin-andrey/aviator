@@ -1,35 +1,25 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import Game from '../components/Game';
-import BasicLayouts from '../components/Layouts/BasicLayout';
-import Logo from '../components/Logo';
-import PlayButton from '../components/PlayButton';
-import { dispatchStartGame } from '../store/slices/globalSlice';
+import { FC, useState } from 'react';
+import Layout from '../components/Layout';
+import ModalSubscribe from '../components/ModalSubscribe';
+import PlayView from '../components/PlayView';
+import StartView from '../components/StartView';
 
-const BetsPage = () => {
+const BetsPage: FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const dispatch = useDispatch();
 
-  const onClick = () => {
+  const handleIsPlaying = () => {
     setIsPlaying(true);
-    dispatch(dispatchStartGame());
   };
 
   return (
-    <BasicLayouts>
-      <div className="App-header relative z-50 ">
-        {isPlaying ? (
-          <>
-            <Game />
-          </>
-        ) : (
-          <div className="flex flex-col justify-between h-screen py-[60px]">
-            <Logo></Logo>
-            <PlayButton className="green-gradient button-play" onClick={onClick} text={'PLAY'} />
-          </div>
-        )}
-      </div>
-    </BasicLayouts>
+    <Layout isPlaying={isPlaying}>
+      <div className="absolute left-0 top-[13%] h-[calc(100vh-50%)] w-full flex items-center marquee scroll-animate" />
+      <div className="bg-[#D96DFF] blur-[51px] rounded-full h-[70px] w-[200px] absolute left-1/2 top-[70%] -translate-x-1/2" />
+      {!isPlaying && <StartView onPlay={handleIsPlaying} />}
+
+      {isPlaying && <PlayView />}
+      <ModalSubscribe />
+    </Layout>
   );
 };
 export default BetsPage;

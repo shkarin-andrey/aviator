@@ -8,151 +8,25 @@
   font-weight: normal;
 }
 
-/* span,
-p,
-button {
-  font-family: 'KarantinaRegular', arial;
+html {
+  font-family: KarantinaRegular;
 }
 
-button {
-  letter-spacing: 1.12px;
-} */
-
-.App {
-  text-align: center;
-  font-size: 1rem;
+.marquee {
+  background-image: url('./assets/png/clouds.png');
+  animation: scroll linear 10s infinite;
 }
 
-.App-header {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.stars {
+  background-image: url('./assets/png/starts.png');
+  animation: scroll linear 30s infinite;
 }
 
-.flex {
-  display: flex;
-}
-.items-center {
-  align-items: center;
-}
-.justify-center {
-  justify-content: center;
-}
-
-.button-play {
-  border-radius: 33px;
-  border: 3px solid var(--white, #fff);
-  box-shadow: 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
-}
-
-.button-scale {
-  border-radius: 12px;
-  border: 3px solid var(--white, #fff);
-}
-
-.button-min {
-  box-shadow: inset 0px -4px 0px 0px #3ecefe, 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
-}
-
-.button-x2 {
-  box-shadow: inset 0px -4px 0px 0px #da57f0, 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
-}
-.button-div2 {
-  box-shadow: inset 0px -4px 0px 0px #a75cf4, 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
-}
-.button-allin {
-  box-shadow: inset 0px -4px 0px 0px #ffb213, 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
-}
-.button-deposit {
-  box-shadow: inset 0px -4px 0px 0px #09b9ff, 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
-}
-
-.green-gradient {
-  background: linear-gradient(
-    60deg,
-    rgba(146, 242, 8, 1) 0%,
-    rgba(146, 242, 8, 1) 50%,
-    rgba(103, 235, 0, 1) 50%,
-    rgba(103, 235, 0, 1) 100%
-  );
-}
-
-.orange-gradient {
-  background: linear-gradient(
-    60deg,
-    rgba(255, 168, 0, 1) 0%,
-    rgba(255, 168, 0, 1) 50%,
-    rgb(254, 142, 14) 50%,
-    rgb(254, 142, 14) 100%
-  );
-}
-
-.purpure-gradient {
-  background: linear-gradient(
-    60deg,
-    rgba(242, 8, 219, 1) 0%,
-    rgba(242, 8, 219, 1) 50%,
-    rgba(244, 98, 215, 1) 50%,
-    rgba(244, 98, 215, 1) 100%
-  );
-}
-
-.shadow {
-  box-shadow: 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
-}
-
-.shadow-bets {
-  box-shadow: 0px 2px 0px 0px #3ecefe, 0px 4px 0px 0px rgba(0, 0, 0, 0.15);
-}
-.bg-button {
-  width: 100%;
-  height: 100%;
-  background-image: url('./assets/png/bgButton.png');
-  background-position: center;
-  filter: blur(10px);
-  position: absolute;
-  z-index: 40;
-  top: 0;
-  left: 0;
-}
-
-.bg_canvas-start {
-  background: linear-gradient(180deg, #9c59fe 0%, #6f53fd 100%);
-}
-
-.bg_canvas-game {
-  background: linear-gradient(180deg, #231451 0%, #8055fd 100%);
-}
-
-.progress-bar-value {
-  background-color: red;
-  animation: animation1 15s, animation2 5s;
-  animation-iteration-count: 1;
-  height: 100%;
-  width: 0px;
-}
-
-@keyframes animation1 {
-  0% {
-    width: 130px;
+@keyframes scroll {
+  from {
+    background-position: 100vw 0;
   }
-  100% {
-    width: 0px;
+  to {
+    background-position: -100vw 0;
   }
-}
-
-@keyframes animation2 {
-  0% {
-    width: 210px;
-  }
-  100%% {
-    width: 130px;
-  }
-}
-
-.bg-modal {
-  background: rgba(75, 48, 155, 0.5);
-  backdrop-filter: blur(2px);
 }

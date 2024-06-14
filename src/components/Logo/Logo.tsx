@@ -1,12 +1,18 @@
 import { FC } from 'react';
-import { ReactComponent as LogoImg } from '../../assets/logo.svg';
-import { PropsLogo } from './Logo.interfaces';
 
-export const Logo: FC<PropsLogo> = ({ className }) => {
+type TLogo = React.HTMLAttributes<HTMLHeadingElement>;
+
+const Logo: FC<TLogo> = ({ children }) => {
   return (
-    <div className={className}>
-      <LogoImg></LogoImg>
-    </div>
+    <h1
+      className="text-[#FFDB0A] text-[80px] uppercase tracking-[3.2px] font-normal"
+      style={{
+        textShadow:
+          '#643AC5 0px 2px 0px, #BE7CFB 3px 5px 0px, #BE7CFB -3px 5px 0px, #BE7CFB -3px -2px 0px, #BE7CFB 3px -2px 0px',
+      }}
+    >
+      {children}
+    </h1>
   );
 };
 

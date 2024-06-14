@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "aviator",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -21,6 +21,7 @@
     "@types/react-dom": "^18.0.6",
     "axios": "^1.4.0",
     "eslint-plugin-tailwindcss": "^3.13.0",
+    "formik": "^2.4.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.1.2",
@@ -28,14 +29,17 @@
     "react-scripts": "5.0.1",
     "react-telegram-webapp": "^0.1.5",
     "react-tradingview-embed": "^3.0.6",
+    "react-transition-group": "^4.4.5",
     "sass": "^1.55.0",
     "socket.io-client": "^4.5.2",
     "telegram-webapps-types": "^1.0.5",
     "tsconfig-paths": "^4.1.0",
     "typescript": "^4.8.4",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@types/react-transition-group": "^4.4.10",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "@typescript-eslint/parser": "^5.39.0",
     "autoprefixer": "^10.4.14",

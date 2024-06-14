@@ -7,16 +7,16 @@ import Button from '../Button';
 import { useDispatch } from 'react-redux';
 import { ReactComponent as AirPlainIcon } from '../../assets/svg/air-plane.svg';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { setToggleRound } from '../../store/slices/globalSlice';
+import { setRate, setToggleRound } from '../../store/slices/globalSlice';
 
 const PlayView: FC = () => {
   const [count, setCount] = useState(1);
-  const [select, setSelect] = useState<null | number>(null);
 
   const dispatch = useDispatch();
   const startRound = useAppSelector((state) => state.global.startRound);
+  const rate = useAppSelector((state) => state.global.rate);
 
-  const valueIsSelected = select ? 'Bet is selected' : 'Choose a bet to play';
+  const valueIsSelected = rate ? 'Bet is selected' : 'Choose a bet to play';
 
   const classNemeStart = startRound ? 'scale-[1.7] -rotate-[13deg] top-[43%]' : 'scale-100 top-[48%]';
 
@@ -27,7 +27,11 @@ const PlayView: FC = () => {
 
     const interval = setInterval(() => {
       setCount((prev) => {
-        if (prev >= generateCount) return prev;
+        if (prev >= generateCount) {
+          dispatch(setToggleRound(false));
+          dispatch(setRate(null));
+          return prev;
+        }
 
         return prev + 0.1;
       });
@@ -40,10 +44,12 @@ const PlayView: FC = () => {
     return () => clearInterval(interval);
   }, [startRound]);
 
-  const handleStart = () => {
-    setSelect(0);
-    dispatch(setToggleRound(true));
+  const handleStart = (number: number) => {
+    dispatch(setRate(number));
+    // dispatch(setToggleRound(true));
   };
+
+  console.log((startRound && !rate) || !rate, startRound && !rate, !rate);
 
   return (
     <>
@@ -55,7 +61,7 @@ const PlayView: FC = () => {
         )}
         <AirPlainIcon className={`transition-all duration-200 ${classNemeStart}`} />
       </div>
-      {startRound && (
+      {/* {startRound && (
         <div className="absolute left-1/2 top-[70%] -translate-x-1/2 w-[150px] flex flex-col gap-4 justify-center">
           <div>
             <div className="text-[#DFF9FF] font-bold text-[20px] leading-none uppercase tracking-[1.2px] text-center">
@@ -72,45 +78,51 @@ const PlayView: FC = () => {
             Cash out
           </Button>
         </div>
-      )}
-      {!startRound && (
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-[10%] w-[260px] flex flex-col gap-3">
-          <Balance />
-          <BetWrapper text={valueIsSelected}>
-            {startRound && (
+      )} */}
+
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-[10%] w-[260px] flex flex-col gap-3">
+        {(!startRound || (startRound && !rate)) && <Balance balance={500} />}
+        {(!startRound || (startRound && !rate)) && (
+          <BetWrapper text={!startRound ? valueIsSelected : ''}>
+            {startRound && !rate && (
               <div className="text-[#5754FD] text-[20px] font-bold text-center tracking-[0.8px] px-5 uppercase">
                 Wait until the end of the round to make a bet
               </div>
             )}
-            <div className="flex items-center justify-between gap-2.5">
-              <Button
-                onClick={handleStart}
-                isFill
-                type="blue"
-                className="!px-0 w-full rounded-[14px] after:rounded-[14px]"
-              >
-                $1
-              </Button>
-              <Button
-                onClick={handleStart}
-                isFill
-                type="blue"
-                className="!px-0 w-full rounded-[14px] after:rounded-[14px]"
-              >
-                $2
-              </Button>
-              <Button
-                onClick={handleStart}
-                isFill
-                type="purple"
-                className="!px-0 w-full rounded-[14px] after:rounded-[14px]"
-              >
-                $5
-              </Button>
-            </div>
+            {!startRound && (
+              <div className="flex items-center justify-between gap-2.5">
+                <Button
+                  onClick={() => handleStart(1)}
+                  isFill
+                  type={rate === 1 ? 'purple' : 'blue'}
+                  disabled={!!rate && rate !== 1}
+                  className="!px-0 w-full rounded-[14px] after:rounded-[14px]"
+                >
+                  $1
+                </Button>
+                <Button
+                  onClick={() => handleStart(2)}
+                  isFill
+                  type={rate === 2 ? 'purple' : 'blue'}
+                  disabled={!!rate && rate !== 2}
+                  className="!px-0 w-full rounded-[14px] after:rounded-[14px]"
+                >
+                  $2
+                </Button>
+                <Button
+                  onClick={() => handleStart(5)}
+                  isFill
+                  type={rate === 5 ? 'purple' : 'blue'}
+                  disabled={!!rate && rate !== 5}
+                  className="!px-0 w-full rounded-[14px] after:rounded-[14px]"
+                >
+                  $5
+                </Button>
+              </div>
+            )}
           </BetWrapper>
-        </div>
-      )}
+        )}
+      </div>
     </>
   );
 };

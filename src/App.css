@@ -13,8 +13,7 @@ html {
 }
 
 .marquee {
-  background-image: url('./assets/png/clouds.png');
-  animation: scroll linear 10s infinite;
+  animation: scroll linear 5s infinite;
 }
 
 .stars {
@@ -68,9 +67,9 @@ html {
 
 @keyframes scroll {
   from {
-    background-position: 100vw 0;
+    transform: translate(0, 0);
   }
   to {
-    background-position: -100vw 0;
+    transform: translate(-100%, 0);
   }
 }

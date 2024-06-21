@@ -13,13 +13,12 @@ html {
 }
 
 .marquee {
-  background-image: url('./assets/png/clouds.png');
-  animation: scroll linear 10s infinite;
+  animation: scroll linear 5s infinite;
 }
 
 .stars {
-  background-image: url('./assets/png/starts.png');
-  animation: scroll linear 30s infinite;
+  background: url('./assets/png/starts.png') repeat;
+  animation: scrollStars linear 30s infinite;
 }
 
 .air-animate {
@@ -66,11 +65,20 @@ html {
   }
 }
 
-@keyframes scroll {
+@keyframes scrollStars {
   from {
     background-position: 100vw 0;
   }
   to {
     background-position: -100vw 0;
+  }
+}
+
+@keyframes scroll {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: translate(-100%, 0);
   }
 }

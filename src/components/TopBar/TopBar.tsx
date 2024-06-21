@@ -3,9 +3,7 @@ import { typeButtonOfNumber } from '../../utils/typeButtonOfNumber';
 import Button from '../Button';
 import { ITopBar } from './TopBar.interface';
 
-const data = [1, 1.5, 3, 4, 6, 10, 15, 25, 30, 35, 40, 45, 50, 55];
-
-const TopBar: FC<ITopBar> = ({ isStart, time, className = '', ...props }) => {
+const TopBar: FC<ITopBar> = ({ isStart, time, className = '', history, ...props }) => {
   return (
     <div {...props} className={`overflow-hidden w-full flex flex-col gap-3.5 h-[105px] justify-end ${className}`}>
       {!isStart && (
@@ -29,7 +27,7 @@ const TopBar: FC<ITopBar> = ({ isStart, time, className = '', ...props }) => {
         </>
       )}
       <div className="overflow-x-auto py-1 flex items-center gap-3.5 ml-[25px] w-full">
-        {data.map((item, index) => (
+        {history.map((item, index) => (
           <Button
             size="s"
             type={typeButtonOfNumber(item)}

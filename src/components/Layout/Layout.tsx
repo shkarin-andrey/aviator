@@ -1,4 +1,4 @@
-import { useInitDataRaw } from '@tma.js/sdk-react';
+import { useInitData, useInitDataRaw } from '@tma.js/sdk-react';
 import { FC, useEffect, useState } from 'react';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -12,11 +12,12 @@ const Layout: FC<ILayout> = ({ children, isPlaying }) => {
 
   const [time, setTime] = useState(15);
 
-  const initData = useInitDataRaw();
+  const initDataRaw = useInitDataRaw();
+  const initData = useInitData();
   const dispatch = useAppDispatch();
   const startRound = useAppSelector((state) => state.global.startRound);
 
-  console.log(initData);
+  console.log(initDataRaw, initData);
 
   useEffect(() => {
     const body = {
@@ -27,7 +28,8 @@ const Layout: FC<ILayout> = ({ children, isPlaying }) => {
     getUserInfo(body)
       .unwrap()
       .catch((error) => {
-        alert(error.data.message);
+        // alert(error.data.message);
+        console.log(error);
       });
   }, []);
 

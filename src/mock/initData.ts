@@ -1,0 +1,2 @@
+export const initData =
+  'user=%7B%22id%22%3A5526160149%2C%22first_name%22%3A%22P000-%F0%9F%8E%9E%D0%92%D0%BB%D0%B0%D0%B4%D0%B8%D0%BC%D0%B8%D1%80%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22r000vladimir%22%2C%22language_code%22%3A%22ru%22%2C%22is_premium%22%3Atrue%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=-2435680716132282606&chat_type=sender&start_param=webapp_aviator_stage_bot&auth_date=1718970309&hash=5b679ebbe2d85f71540dfe59609405dba5093803ae8cbb70f27c9a656c3d56a7';

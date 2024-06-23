@@ -1,11 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const { REACT_APP_BASE_URL_API } = process.env;
+const { REACT_APP_API_URL } = process.env;
 
 const staticApi = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: REACT_APP_BASE_URL_API,
+    baseUrl: REACT_APP_API_URL,
   }),
   endpoints: () => ({}),
 });

@@ -1,4 +1,12 @@
-import { CloseRequest, DefaultApiRequest, UpdateBetRequest, UserInfoResponse, WithdrawRequest } from '../../interfaces';
+import {
+  CloseRequest,
+  DefaultApiRequest,
+  UpdateBetRequest,
+  UpdateBetResponse,
+  UserInfoResponse,
+  WithdrawRequest,
+  WithdrawResponse,
+} from '../../interfaces';
 import { api } from './api';
 
 export const apiGameSlice = api.injectEndpoints({
@@ -13,7 +21,7 @@ export const apiGameSlice = api.injectEndpoints({
         },
       }),
     }),
-    updateBet: builder.mutation<any, UpdateBetRequest>({
+    updateBet: builder.mutation<UpdateBetResponse, UpdateBetRequest>({
       query: ({ webAppData, userGame, amount }) => ({
         url: `bet`,
         method: 'POST',
@@ -24,7 +32,7 @@ export const apiGameSlice = api.injectEndpoints({
         },
       }),
     }),
-    close: builder.mutation<any, CloseRequest>({
+    close: builder.mutation<void, CloseRequest>({
       query: ({ webAppData, userGame, betId, roundId }) => ({
         url: `close`,
         method: 'POST',
@@ -36,7 +44,7 @@ export const apiGameSlice = api.injectEndpoints({
         },
       }),
     }),
-    withdraw: builder.mutation<any, WithdrawRequest>({
+    withdraw: builder.mutation<WithdrawResponse, WithdrawRequest>({
       query: ({ webAppData, userGame, credentials, amount }) => ({
         url: `withdraw`,
         method: 'POST',

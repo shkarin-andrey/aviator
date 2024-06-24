@@ -1,9 +1,9 @@
-import { Events } from './Events.enum';
+import { GameEvents } from './GameEvents.enum';
 
 export type SocketEvents = {
-  event: Events;
-  roundId: number;
+  event: GameEvents;
+  roundId: string;
   nonce: number;
   multiplier: number;
-  amount: number;
+  amount?: number;
 };

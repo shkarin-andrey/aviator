@@ -1,4 +1,4 @@
-export enum Events {
+export enum GameEvents {
   START_ROUND = 'start_round',
   TICK = 'tick',
   WIN = 'win',

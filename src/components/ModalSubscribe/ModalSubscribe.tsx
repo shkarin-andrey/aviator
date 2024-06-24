@@ -1,8 +1,11 @@
 import { FC, useState } from 'react';
+import { useAppSelector } from '../../hooks/useAppSelector';
 import Modal from '../Modal';
 
 const ModalSubscribe: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const userInfo = useAppSelector((state) => state.global.userInfo);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -11,11 +14,7 @@ const ModalSubscribe: FC = () => {
   return (
     <Modal isOpen={isOpen} handleClose={handleClose} title="Limit increase">
       <div className="w-[84px] h-[84px] rounded-full overflow-hidden mt-5 mx-auto">
-        <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmCy16nhIbV3pI1qLYHMJKwbH2458oiC9EmA&s"
-          alt=""
-          className="w-full h-full object-cover"
-        />
+        <img src={userInfo?.channelImage} alt={userInfo?.id} className="w-full h-full object-cover" />
       </div>
       <div className="w-[185px] mt-[10px] text-[#515151] text-base leading-5 text-center">
         You must subscribe to the channel to continue

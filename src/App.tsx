@@ -1,23 +1,57 @@
 import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
+import { useAppDispatch } from './hooks/useAppDispatch';
 import useInitDataApi from './hooks/useInitDataApi';
 import { useSocketio } from './hooks/useSocketio';
-import { Events } from './interfaces/Events.enum';
+import { GameEvents } from './interfaces/GameEvents.enum';
 import { SocketEvents } from './interfaces/SocketEvent';
 import { BetsPage } from './pages';
+import { useGetUserInfoMutation } from './store/api/apiGameSlice';
+import {
+  setBalance,
+  setCash,
+  setFlewAway,
+  setMultiplier,
+  setRate,
+  setRoundId,
+  setRounds,
+  setToggleRound,
+  setType,
+  setUserInfo,
+} from './store/slices/globalSlice';
 
 const wsUrl = process.env.REACT_APP_WS_URI;
 
 export default function App() {
+  const [getUserInfo] = useGetUserInfoMutation();
+
   const defaultApiBody = useInitDataApi();
+  const dispatch = useAppDispatch();
+
+  const refetchUserInfo = () => {
+    getUserInfo(defaultApiBody)
+      .unwrap()
+      .then(({ balance, rounds, ...res }) => {
+        dispatch(setBalance(balance));
+        dispatch(setRounds(rounds));
+        dispatch(setUserInfo(res));
+      })
+      .catch((error) => {
+        // alert(error.data.message);
+        console.log(error);
+      });
+  };
 
   const socket = useSocketio(wsUrl || '', {
     autoConnect: true,
-    // path: '/socket.io/',
     transports: ['websocket', 'polling'],
     query: defaultApiBody,
   });
+
+  useEffect(() => {
+    refetchUserInfo();
+  }, []);
 
   useEffect(() => {
     socket?.on('connect', () => {
@@ -26,32 +60,40 @@ export default function App() {
 
         console.log(events);
 
+        dispatch(setType(event));
+        dispatch(setRoundId(roundId));
+
         switch (event) {
-          case Events.START_ROUND:
+          case GameEvents.START_ROUND:
+            dispatch(setToggleRound(true));
             console.log('start');
             break;
 
-          case Events.FINISH_ROUND:
+          case GameEvents.FINISH_ROUND:
             console.log('finish');
+            refetchUserInfo();
+
+            dispatch(setMultiplier(null));
+            dispatch(setToggleRound(false));
+            dispatch(setRate(null));
+            dispatch(setFlewAway(true));
 
             break;
 
-          case Events.WIN:
+          case GameEvents.WIN:
             console.log('win');
+            dispatch(setCash(amount));
 
             break;
 
-          case Events.LOSE:
+          case GameEvents.LOSE:
             console.log('lose');
 
             break;
 
-          case Events.TICK:
-            console.log('tick');
+          case GameEvents.TICK:
+            dispatch(setMultiplier(multiplier));
 
-            break;
-
-          default:
             break;
         }
       });

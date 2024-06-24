@@ -5,9 +5,14 @@ import Modal from '../Modal';
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import useInitDataApi from '../../hooks/useInitDataApi';
+import { useWithdrawMutation } from '../../store/api/apiGameSlice';
 import { IModalWithdraw } from './ModalWithdraw.interface';
 
 const ModalWithdraw: FC<IModalWithdraw> = ({ balance }) => {
+  const [withdraw] = useWithdrawMutation();
+  const defaultApiBody = useInitDataApi();
+
   const [isOpen, setIsOpen] = useState(false);
   const [active, setActive] = useState(0);
   const [typeModal, setTypeModal] = useState<'balance' | 'withdraw' | 'accepted'>('balance');
@@ -23,7 +28,7 @@ const ModalWithdraw: FC<IModalWithdraw> = ({ balance }) => {
   }, [balance]);
 
   const validationSchema = Yup.object({
-    details: Yup.string().trim().required('Введите номер карты или счета'),
+    credentials: Yup.string().trim().required('Введите номер карты или счета'),
     amount: Yup.string()
       .trim()
       .matches(/^\d+$/, 'Поле должно содержать только цифры')
@@ -45,12 +50,22 @@ const ModalWithdraw: FC<IModalWithdraw> = ({ balance }) => {
   const formik = useFormik({
     initialValues: {
       amount: '',
-      details: '',
+      credentials: '',
     },
     validationSchema,
     onSubmit: (values) => {
-      console.log(values);
-      setTypeModal('accepted');
+      const body = {
+        ...defaultApiBody,
+        ...values,
+        amount: parseInt(values.amount, 10),
+      };
+
+      withdraw(body)
+        .unwrap()
+        .then(() => {
+          handleClose();
+          setTypeModal('accepted');
+        });
     },
   });
 
@@ -118,14 +133,14 @@ const ModalWithdraw: FC<IModalWithdraw> = ({ balance }) => {
                 <Input
                   placeholder="Enter your details"
                   label="Details"
-                  className={formik.touched.amount && formik.errors.amount ? 'border-red-500' : ''}
+                  className={formik.touched.credentials && formik.errors.credentials ? 'border-red-500' : ''}
                   {...formik.getFieldProps('details')}
                 />
 
                 <Input
                   placeholder="Enter your amount"
                   label="Amount"
-                  className={formik.touched.details && formik.errors.details ? 'border-red-500' : ''}
+                  className={formik.touched.amount && formik.errors.amount ? 'border-red-500' : ''}
                   {...formik.getFieldProps('amount')}
                 />
               </div>

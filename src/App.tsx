@@ -38,8 +38,8 @@ export default function App() {
         dispatch(setUserInfo(res));
       })
       .catch((error) => {
-        // alert(error.data.message);
-        console.log(error);
+        alert(error.data.message);
+        console.error(error);
       });
   };
 
@@ -58,19 +58,15 @@ export default function App() {
       socket?.on('events', (events: SocketEvents) => {
         const { event, multiplier, roundId, amount } = events;
 
-        console.log(events);
-
         dispatch(setType(event));
         dispatch(setRoundId(roundId));
 
         switch (event) {
           case GameEvents.START_ROUND:
             dispatch(setToggleRound(true));
-            console.log('start');
             break;
 
           case GameEvents.FINISH_ROUND:
-            console.log('finish');
             refetchUserInfo();
 
             dispatch(setMultiplier(null));
@@ -81,14 +77,11 @@ export default function App() {
             break;
 
           case GameEvents.WIN:
-            console.log('win');
             dispatch(setCash(amount));
 
             break;
 
           case GameEvents.LOSE:
-            console.log('lose');
-
             break;
 
           case GameEvents.TICK:

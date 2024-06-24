@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '../../hooks/useAppSelector';
 import { typeButtonOfNumber } from '../../utils/typeButtonOfNumber';
@@ -13,100 +12,114 @@ import RateBtnList from '../RateBtnList';
 import Success from '../Success';
 
 import { ReactComponent as AirPlainIcon } from '../../assets/svg/air-plane.svg';
-import { setRate, setToggleRound } from '../../store/slices/globalSlice';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import useInitDataApi from '../../hooks/useInitDataApi';
+import { GameEvents } from '../../interfaces/GameEvents.enum';
+import { useCloseMutation } from '../../store/api/apiGameSlice';
+import { setCash, setFlewAway } from '../../store/slices/globalSlice';
 
 const PlayView: FC = () => {
-  const dispatch = useDispatch();
+  const [close] = useCloseMutation();
+
+  const dispatch = useAppDispatch();
+
   const startRound = useAppSelector((state) => state.global.startRound);
   const rate = useAppSelector((state) => state.global.rate);
+  const multiplier = useAppSelector((state) => state.global.multiplier);
+  const type = useAppSelector((state) => state.global.type);
+  const balance = useAppSelector((state) => state.global.balance);
+  const roundId = useAppSelector((state) => state.global.roundId);
+  const betId = useAppSelector((state) => state.global.betId);
+  const cash = useAppSelector((state) => state.global.cash);
+  const flewAway = useAppSelector((state) => state.global.flewAway);
+  const defaultApiBody = useInitDataApi();
 
-  const [count, setCount] = useState(1);
-  const [cash, setCash] = useState<number | null>(null);
-  const [isWin, setIsWin] = useState<boolean | null>(null);
-  const [endPlay, setEndPlay] = useState<boolean>(false);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [showLose, setShowLose] = useState<boolean>(false);
+  const [winCount, setWinCount] = useState(1);
 
-  const rateCount = rate ? rate * count : 0;
+  const rateCount = rate && multiplier ? rate * multiplier : 0;
 
   const valueIsSelected = rate ? 'Bet is selected' : 'Choose a bet to play';
 
-  const classNemeStart = startRound && !showSuccess ? 'scale-[1.7] -rotate-[13deg]' : 'scale-100';
+  const isFinish = type === GameEvents.FINISH_ROUND;
+  const isWin = type === GameEvents.WIN;
+  const isLose = type === GameEvents.LOSE;
+  const isTick = type === GameEvents.TICK;
+
+  const classNemeStart = !isFinish && !isLose ? 'scale-[1.7] -rotate-[13deg]' : 'scale-100';
   const classNameSuccess = showSuccess ? 'top-[50%]' : 'top-[30%]';
-
-  const classNameEndRound = endPlay ? 'air-animate' : '';
-  const classNameAnimateAir = endPlay ? '' : 'air-animate-infinite';
+  const classNameEndRound = isFinish || isLose ? 'air-animate' : '';
 
   useEffect(() => {
-    if (!startRound) return;
-
-    const generateCount = Math.random() * 30 + 1;
-
-    const interval = setInterval(() => {
-      setCount((prev) => {
-        if (prev >= generateCount) {
-          setEndPlay(true);
-
-          setTimeout(() => {
-            dispatch(setToggleRound(false));
-            dispatch(setRate(null));
-            setCount(1);
-            setCash(null);
-            setIsWin(null);
-            setEndPlay(false);
-          }, 4_000);
-
-          clearInterval(interval);
-
-          return prev;
-        }
-
-        return prev + 0.1;
-      });
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [startRound]);
-
-  useEffect(() => {
-    if (isWin && endPlay) {
+    if (isWin) {
       setShowSuccess(true);
 
       setTimeout(() => {
         setShowSuccess(false);
       }, 4_000);
     }
-  }, [isWin, endPlay]);
+  }, [isWin]);
+
+  useEffect(() => {
+    if (!isFinish) return;
+
+    setTimeout(() => {
+      dispatch(setCash(undefined));
+      dispatch(setFlewAway(false));
+    }, 4_000);
+  }, [isFinish]);
+
+  useEffect(() => {
+    if (isLose) {
+      setShowLose(true);
+
+      setTimeout(() => {
+        setShowLose(false);
+        setWinCount(1);
+      }, 4_000);
+    }
+  }, [isLose]);
 
   const handleCashOut = () => {
-    setIsWin(true);
-    setCash(rateCount);
+    const body = {
+      ...defaultApiBody,
+      betId: betId || '',
+      roundId: roundId || '',
+    };
+
+    close(body)
+      .unwrap()
+      .then(() => {
+        setWinCount(multiplier || 1);
+      });
   };
 
   return (
     <>
-      {showSuccess && (
+      {showSuccess && multiplier && (
         <div className="absolute left-1/2 -translate-x-1/2 top-[30%] flex flex-col gap-5">
-          <Success winCount={count.toFixed(1)} reward={cash?.toFixed(1) || ''} />
+          <Success winCount={winCount} reward={cash || 0} />
         </div>
       )}
       <div
-        className={`absolute left-1/2 -translate-x-1/2 flex flex-col gap-5 transition-all ${classNameSuccess} ${classNameAnimateAir}`}
+        className={`absolute left-1/2 -translate-x-1/2 flex flex-col gap-5 transition-all air-animate-infinite ${classNameSuccess}`}
       >
-        {startRound && !showSuccess && (
+        {((!isFinish && !isLose) || flewAway) && multiplier && (
           <>
-            {endPlay && (
+            {flewAway && (
               <div className="text-white font-bold text-[20px] translate-y-[18px] leading-none uppercase tracking-[2px] text-center">
                 FLEW AWAY!
               </div>
             )}
-            <Button type={typeButtonOfNumber(count)} className="lowercase">
-              {count.toFixed(1)}x
+            <Button type={typeButtonOfNumber(multiplier)} className="lowercase">
+              {multiplier}x
             </Button>
           </>
         )}
         <AirPlainIcon className={`transition-all duration-200 ${classNemeStart} ${classNameEndRound}`} />
       </div>
-      {startRound && rate && isWin !== false && !endPlay && (
+      {rate && isTick && (
         <div className="absolute left-1/2 top-[70%] -translate-x-1/2 w-[150px] flex flex-col gap-4 justify-center">
           {cash && <LostReward count={rateCount - cash} />}
           <BetWrapper color="#11BBE1" title={cash ? 'claim Reward' : 'Reward'}>
@@ -114,7 +127,7 @@ const PlayView: FC = () => {
               ${(cash || rateCount).toFixed(1)}
             </div>
           </BetWrapper>
-          {(!cash || !isWin) && !endPlay && (
+          {!cash && (
             <Button onClick={handleCashOut} type="orange" className="px-[15px]">
               Cash out
             </Button>
@@ -123,17 +136,19 @@ const PlayView: FC = () => {
       )}
 
       <div className="absolute left-1/2 -translate-x-1/2 bottom-[10%] w-[260px] flex flex-col gap-3">
-        {endPlay && !isWin && rate && <Fail />}
-        {(!startRound || (startRound && !rate) || (endPlay && isWin)) && <Balance balance={500} />}
-        {(!startRound || (startRound && !rate) || (endPlay && isWin)) && (
-          <BetWrapper text={!startRound ? valueIsSelected : ''}>
-            {startRound && !rate && (
-              <div className="text-[#5754FD] text-[20px] font-bold text-center tracking-[0.8px] px-5 uppercase">
-                Wait until the end of the round to make a bet
-              </div>
-            )}
-            {(!startRound || (endPlay && isWin)) && <RateBtnList />}
-          </BetWrapper>
+        {showLose && <Fail />}
+        {(!startRound || (startRound && !rate)) && !showLose && (
+          <>
+            <Balance balance={balance} />
+            <BetWrapper text={!startRound ? valueIsSelected : ''}>
+              {isTick && !rate && (
+                <div className="text-[#5754FD] text-[20px] font-bold text-center tracking-[0.8px] px-5 uppercase">
+                  Wait until the end of the round to make a bet
+                </div>
+              )}
+              {!startRound && !isTick && <RateBtnList />}
+            </BetWrapper>
+          </>
         )}
       </div>
     </>

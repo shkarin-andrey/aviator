@@ -1,4 +1,4 @@
 export interface ISuccess {
-  winCount: string;
-  reward: string;
+  winCount: number;
+  reward: number;
 }
